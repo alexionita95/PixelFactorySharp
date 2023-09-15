@@ -15,14 +15,19 @@ namespace PixelFactory
             None, Rot90, Rot180, Rot270
         }
         public Vector2 Position { get; set; }
-        public Vector2 Size { get; set; }
-        public EntityRotation Rotation { get; set; } = EntityRotation.None;
+        public Vector2 Size { get; private set; }
+
+        protected Vector2 rotatedSize;
+        public EntityRotation Rotation { get; private set; } = EntityRotation.None;
         public Texture2D Texture;
         protected SpriteBatch spriteBatch;
 
-        public DrawableEntity(SpriteBatch spriteBatch)
+        public DrawableEntity(SpriteBatch spriteBatch, Vector2 size)
         {
             this.spriteBatch = spriteBatch;
+            Size = size;
+            rotatedSize = size;
+            
         }
         public float GetRotationAngle()
         {
@@ -40,11 +45,26 @@ namespace PixelFactory
             }
             return MathHelper.ToRadians(0);
         }
+        public void Rotate(EntityRotation rotation)
+        {
+            Rotation = rotation;
+            switch (Rotation)
+            {
+                case EntityRotation.None:
+                case EntityRotation.Rot180:
+                    rotatedSize = Size;
+                    break;
+                case EntityRotation.Rot90:
+                case EntityRotation.Rot270:
+                    rotatedSize = new Vector2(Size.Y, Size.X);
+                    break;
+            }
+        }
         public virtual void Draw(GameTime gameTime)
         {
 
             Texture = ContentManager.Instance.GetBuildingTexture(Id);
-            Vector2 pixelSize = Map.MapToScreen(Size.X, Size.Y);
+            Vector2 pixelSize = Map.MapToScreen(rotatedSize.X, rotatedSize.Y);
 
             Vector2 newPos = Map.MapToScreen(Position.X, Position.Y);
             // newPos.Y -= difference;

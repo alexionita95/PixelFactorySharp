@@ -53,17 +53,13 @@ namespace PixelFactory
             ContentManager.Instance.AddBuildingTexture("debugBuilding2x2", Content.Load<Texture2D>("debugBuilding2x2"));
             debugFont = Content.Load<SpriteFont>("debug");
             map.Generate();
-            building = new Building(_spriteBatch);
+            building = new Building(_spriteBatch, new Vector2(2, 2));
             building.Position = new Vector2(10,5) + map.MapOffset;
-            building.Size = new Vector2(2, 2);
             building.Id = "debugBuilding2x2";
             belt = new Belt(_spriteBatch);
             belt.Position = new Vector2(10, 7) + map.MapOffset;
-            belt.Size = new Vector2(1, 1);
             belt.Id = "debugBelt";
             belt.ProcessingTime = 15000;
-            belt.AddItem(new Items.Item() { Id = "debugItem" });
-            belt.AddItem(new Items.Item() { Id = "debugItem" });
 
             // TODO: use this.Content to load your game content here
         }
@@ -80,7 +76,6 @@ namespace PixelFactory
             Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
             // TODO: Add your update logic here
             belt.Update(gameTime);
-            belt.AddItem(new Items.Item() { Id = "debugItem" });
             base.Update(gameTime);
         }
 

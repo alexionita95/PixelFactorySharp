@@ -12,9 +12,9 @@ namespace PixelFactory.Buildings
 {
     public class Building : DrawableEntity
     {
-       
 
-        
+
+
         protected List<ItemSlot> Inventory;
         protected GameTime lastAction;
         protected float rotation = 0;
@@ -22,8 +22,8 @@ namespace PixelFactory.Buildings
 
         public float ProcessingTime { get; set; }
 
-        public Building(SpriteBatch spriteBatch)
-            : base(spriteBatch)
+        public Building(SpriteBatch spriteBatch, Vector2 size)
+            : base(spriteBatch, size)
         {
             Inventory = new List<ItemSlot>();
         }
@@ -68,7 +68,7 @@ namespace PixelFactory.Buildings
         {
             foreach (ItemSlot slot in Inventory)
             {
-                if (slot.Item == null || !slot.IsFull() && slot.Item.Id == item.Id && (slot.IsInput() || slot.IsIO()) )
+                if (slot.Item == null || !slot.IsFull() && slot.Item.Id == item.Id && (slot.IsInput() || slot.IsIO()))
                 {
                     return true;
                 }
