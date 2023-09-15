@@ -61,9 +61,17 @@ namespace PixelFactory
             belt.Id = "debugBelt";
             belt.ProcessingTime = 15000;
 
+            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.W, belt.Position);
+
             // TODO: use this.Content to load your game content here
         }
-
+        DrawableEntity.EntityRotation entityRotation = DrawableEntity.EntityRotation.None;
+        void Rotate()
+        {
+            int length = Enum.GetValues(typeof(DrawableEntity.EntityRotation)).Length;
+            entityRotation = (DrawableEntity.EntityRotation)(((uint)(entityRotation) + 1)%length);
+        }
+        GameTime lastAction = null;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -74,6 +82,23 @@ namespace PixelFactory
             }
             currentMousePos = Mouse.GetState().Position;
             Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
+            if(lastAction == null)
+            {
+                lastAction = new GameTime(gameTime.TotalGameTime,gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
+            }
+            else
+            {
+                if(gameTime.TotalGameTime.TotalSeconds - lastAction.TotalGameTime.TotalSeconds > 5)
+                {
+                    Rotate();
+                    belt.Rotate(entityRotation);
+                    if (belt.CanAcceptItemsFrom(ItemLogisticsComponentPort.PortDirection.N, belt.Position))
+                    {
+                        belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.N, belt.Position);
+                    }
+                    lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
+                }
+            }    
             // TODO: Add your update logic here
             belt.Update(gameTime);
             base.Update(gameTime);

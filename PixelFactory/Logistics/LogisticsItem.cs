@@ -2,7 +2,7 @@
 
 namespace PixelFactory.Logistics
 {
-    public class LogisticsComponentItem
+    public class LogisticsItem
     {
         public Item Item { get; set; } = null;
         public double Progress { get; set; } = 0;
@@ -20,10 +20,10 @@ namespace PixelFactory.Logistics
                 Progress = 1;
             }
         }
-        public LogisticsComponentItem()
+        public LogisticsItem()
         {
         }
-        public LogisticsComponentItem(Item item)
+        public LogisticsItem(Item item)
         {
             Item = item;
             Progress = 0;
