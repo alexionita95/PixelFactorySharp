@@ -11,6 +11,7 @@ namespace PixelFactory
     {
 
         public string Id { get; set; }
+        public EntityManager EntityManager { get; set; }
         public virtual void Update(GameTime gameTime)
         {
 

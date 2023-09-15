@@ -65,7 +65,7 @@ namespace PixelFactory.Logistics
             Texture2D itemTexture = ContentManager.Instance.GetItemTexture(item.Item.Id);
             var itemPos = GetItemPosition(item);
             itemPos = new Vector2(itemPos.X * Map.TileSize / 2, itemPos.Y * Map.TileSize / 2);
-            spriteBatch.Draw(itemTexture, new Rectangle((int)(pos.X + itemPos.X - scaleWidth / 2), (int)(pos.Y + itemPos.Y - scaleHeight / 2), (int)scaleWidth, (int)scaleHeight), Color.White);
+            spriteBatch.Draw(itemTexture, new Rectangle((int)(pos.X + itemPos.X - scaleWidth / 2), (int)(pos.Y + itemPos.Y - scaleHeight / 2), (int)scaleWidth, (int)scaleHeight),null, Color.White,0f,Vector2.Zero,SpriteEffects.None,0f);
         }
         public override void Draw(GameTime gameTime)
         {

@@ -89,7 +89,7 @@ namespace PixelFactory
                     newPos.X -= difference / 2;
                     break;
             }
-            spriteBatch.Draw(Texture, new Rectangle((int)newPos.X + Texture.Width / 2, (int)newPos.Y + Texture.Height / 2, Texture.Width, Texture.Height), new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), SpriteEffects.None, 0);
+            spriteBatch.Draw(Texture, new Rectangle((int)newPos.X + Texture.Width / 2, (int)newPos.Y + Texture.Height / 2, Texture.Width, Texture.Height), new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), SpriteEffects.None, .5f);
         }
     }
 }

@@ -19,8 +19,8 @@ namespace PixelFactory
         Belt belt;
         private Texture2D groundTexture;
         Point currentMousePos;
-        Vector2 selectedTile;
         Map map;
+        EntityManager entityManager;
 
 
        
@@ -32,6 +32,7 @@ namespace PixelFactory
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 800;  // set this value to the desired width of your window
             _graphics.PreferredBackBufferHeight = 800;
+            entityManager = new EntityManager();
         }
 
         protected override void Initialize()
@@ -54,15 +55,61 @@ namespace PixelFactory
             debugFont = Content.Load<SpriteFont>("debug");
             map.Generate();
             building = new Building(_spriteBatch, new Vector2(2, 2));
-            building.Position = new Vector2(10,5) + map.MapOffset;
+            building.Position = new Vector2(10,2) + map.MapOffset;
             building.Id = "debugBuilding2x2";
             belt = new Belt(_spriteBatch);
-            belt.Position = new Vector2(10, 7) + map.MapOffset;
+            belt.Position = new Vector2(10, 4) + map.MapOffset;
             belt.Id = "debugBelt";
-            belt.ProcessingTime = 15000;
+            belt.ProcessingTime = 1500;
+            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.N, belt.Position);
+            entityManager.Add(building);
+            entityManager.Add(belt);
+            Vector2 lastPos = belt.Position;
+            int i = 1;
+            for(i= 1; i < 5; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X, lastPos.Y + i);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                if (i == 4)
+                {
+                    dynBelt.Rotate(DrawableEntity.EntityRotation.Rot90);
+                    dynBelt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.W, belt.Position);
+                }
+                entityManager.Add(dynBelt);
+            }
+            lastPos=new Vector2(lastPos.X,lastPos.Y + i-1);
+            for(i= 1;i < 4; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X - i, lastPos.Y);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotate(DrawableEntity.EntityRotation.Rot90);
+                entityManager.Add(dynBelt);
+            }
+            lastPos = new Vector2(lastPos.X - i , lastPos.Y+1);
+            for (i = 1; i < 5; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X, lastPos.Y - i);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotate(DrawableEntity.EntityRotation.Rot180);
+                entityManager.Add(dynBelt);
+            }
 
-            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.W, belt.Position);
-
+            lastPos = new Vector2(lastPos.X - 1, lastPos.Y - i);
+            for (i = 1; i < 5; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X + i, lastPos.Y);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotate(DrawableEntity.EntityRotation.Rot270);
+                entityManager.Add(dynBelt);
+            }
             // TODO: use this.Content to load your game content here
         }
         DrawableEntity.EntityRotation entityRotation = DrawableEntity.EntityRotation.None;
@@ -76,13 +123,9 @@ namespace PixelFactory
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            if(Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
-                selectedTile = Map.ScreenToMap(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
-            }
             currentMousePos = Mouse.GetState().Position;
             Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
-            if(lastAction == null)
+            /*if(lastAction == null)
             {
                 lastAction = new GameTime(gameTime.TotalGameTime,gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
             }
@@ -98,9 +141,8 @@ namespace PixelFactory
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
-            }    
-            // TODO: Add your update logic here
-            belt.Update(gameTime);
+            }*/
+            entityManager.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -108,14 +150,19 @@ namespace PixelFactory
         {
             GraphicsDevice.Clear(Color.Black) ;
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             map.Draw(gameTime);
-            building.Draw(gameTime);
-            belt.Draw(gameTime);
+            entityManager.Draw(gameTime);
             Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
             //DrawChunk(ScreenToMap(_graphics.PreferredBackBufferWidth/2,_graphics.PreferredBackBufferHeight/2));
             _spriteBatch.Draw(gridTexture, Map.MapToScreen((int)mousePos.X, (int)mousePos.Y), Color.White);
-           _spriteBatch.DrawString(debugFont,$"Coords:({mousePos.X-map.MapOffset.X}, {mousePos.Y-map.MapOffset.Y})", new Vector2(0,0),Color.White);
+            Entity entity = entityManager.GetFromPosition(mousePos - map.MapOffset);
+            string text = $"Coords:({mousePos.X - map.MapOffset.X}, {mousePos.Y - map.MapOffset.Y})";
+            if (entity != null) 
+            {
+                text = $"{text} Entity: #{entity.Id}";
+            }
+           _spriteBatch.DrawString(debugFont,text, new Vector2(0,0),Color.White);
             _spriteBatch.End();
             base.Draw(gameTime);
 

@@ -478,17 +478,75 @@ namespace PixelFactory.Logistics
             var pos = GetClosestItem(position);
             if (pos == float.MaxValue)
                 return true;
-            if (pos <  .5f)
+            if (pos < .5f)
                 return false;
             return true;
         }
+        public ItemLogisticsComponentPort.PortDirection GetOppositeDirection(ItemLogisticsComponentPort port)
+        {
+            var dir = GetRotatedDirection(port.Direction);
+            switch (dir)
+            {
+                case ItemLogisticsComponentPort.PortDirection.N:
+                    return ItemLogisticsComponentPort.PortDirection.S;
+                case ItemLogisticsComponentPort.PortDirection.W:
+                    return ItemLogisticsComponentPort.PortDirection.E;
+                case ItemLogisticsComponentPort.PortDirection.S:
+                    return ItemLogisticsComponentPort.PortDirection.N;
+                case ItemLogisticsComponentPort.PortDirection.E:
+                    return ItemLogisticsComponentPort.PortDirection.W;
+            }
+            return ItemLogisticsComponentPort.PortDirection.N;
+        }
+        public Vector2 GetNextPosition(ItemLogisticsComponentPort port)
+        {
+            var dir = GetRotatedDirection(port.Direction);
+            var pos = GetRotatedPosition(dir, port.Position);
+            Vector2 edgePos = GetEdgePosition(port);
+            edgePos += Position;
+            switch (dir)
+            {
+                case ItemLogisticsComponentPort.PortDirection.N:
+                case ItemLogisticsComponentPort.PortDirection.S:
+                    return new Vector2(edgePos.X - 1, edgePos.Y - 1);
+                case ItemLogisticsComponentPort.PortDirection.W:
+                case ItemLogisticsComponentPort.PortDirection.E:
+                    return new Vector2(edgePos.X - 1, edgePos.Y - 1);
+            }
 
+            return Vector2.Zero;
+        }
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
             double step = gameTime.ElapsedGameTime.TotalMilliseconds / ProcessingTime;
-            base.Update(gameTime);
+            foreach (var output in Outputs)
+            {
+                if (output.HasItems)
+                {
+                    List<LogisticsItem> toRemove = new List<LogisticsItem>();
+                    foreach (var item in output.Items)
+                    {
+                        Vector2 pos = GetNextPosition(output);
+                        Entity entity = EntityManager.GetFromPosition(pos);
+                        if (entity is ItemLogisticsComponent)
+                        {
+                            var component = entity as ItemLogisticsComponent;
+                            var opposite = GetOppositeDirection(output);
+                            if (component.CanAcceptItemsFrom(opposite, pos))
+                            {
+                                component.AddItemToInput(item.Item,opposite, pos);
+                                toRemove.Add(item);
+                            }
+
+                        }
+                    }
+                    foreach(var remove in toRemove)
+                    {
+                        output.Items.Remove(remove);
+                    }
+                }
+            }
             foreach (var input in Inputs)
             {
 

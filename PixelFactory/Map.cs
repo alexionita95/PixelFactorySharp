@@ -23,7 +23,7 @@ namespace PixelFactory
             int mapX = (int)Position.X;
             int mapY = (int)Position.Y;
             Vector2 screenPosition = Map.MapToScreen(mapX, mapY);
-            spriteBatch.Draw(ContentManager.Instance.GetTileTexture(Type), screenPosition, Color.White);
+            spriteBatch.Draw(ContentManager.Instance.GetTileTexture(Type), screenPosition, null, Color.White,0, Vector2.Zero,1,SpriteEffects.None, 1f );
         }
     }
 
