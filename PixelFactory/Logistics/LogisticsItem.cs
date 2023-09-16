@@ -7,10 +7,9 @@ namespace PixelFactory.Logistics
         public Item Item { get; set; } = null;
         public double Progress { get; set; } = 0;
         public bool Ready { get => Progress.Equals(1); }
-
-        public ItemLogisticsComponentPort.PortDirection SourceDirection { get; set; }
+        public Direction SourceDirection { get; set; }
         public uint SourcePosition {  get; set; }
-        public ItemLogisticsComponentPort.PortDirection DestinationDirection { get; set; }
+        public Direction DestinationDirection { get; set; }
         public uint DestinationPosition { get; set; }
         public void Update(double step)
         {
@@ -28,6 +27,5 @@ namespace PixelFactory.Logistics
             Item = item;
             Progress = 0;
         }
-
     }
 }

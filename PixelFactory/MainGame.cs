@@ -17,7 +17,6 @@ namespace PixelFactory
         private Texture2D gridTexture;
         Building building;
         Belt belt;
-        private Texture2D groundTexture;
         Point currentMousePos;
         Map map;
         EntityManager entityManager;
@@ -61,7 +60,7 @@ namespace PixelFactory
             belt.Position = new Vector2(10, 4) + map.MapOffset;
             belt.Id = "debugBelt";
             belt.ProcessingTime = 1500;
-            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.N, belt.Position);
+            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.N, belt.Position);
             entityManager.Add(building);
             entityManager.Add(belt);
             Vector2 lastPos = belt.Position;
@@ -75,12 +74,12 @@ namespace PixelFactory
                 if (i == 4)
                 {
                     dynBelt.Rotate(DrawableEntity.EntityRotation.Rot90);
-                    dynBelt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.W, belt.Position);
+                    dynBelt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.W, belt.Position);
                 }
                 entityManager.Add(dynBelt);
             }
             lastPos=new Vector2(lastPos.X,lastPos.Y + i-1);
-            for(i= 1;i < 4; ++i)
+           /* for(i= 1;i < 4; ++i)
             {
                 Belt dynBelt = new Belt(_spriteBatch);
                 dynBelt.Position = new Vector2(lastPos.X - i, lastPos.Y);
@@ -101,7 +100,7 @@ namespace PixelFactory
             }
 
             lastPos = new Vector2(lastPos.X - 1, lastPos.Y - i);
-            for (i = 1; i < 5; ++i)
+            for (i = 1; i < 4; ++i)
             {
                 Belt dynBelt = new Belt(_spriteBatch);
                 dynBelt.Position = new Vector2(lastPos.X + i, lastPos.Y);
@@ -109,7 +108,7 @@ namespace PixelFactory
                 dynBelt.ProcessingTime = belt.ProcessingTime;
                 dynBelt.Rotate(DrawableEntity.EntityRotation.Rot270);
                 entityManager.Add(dynBelt);
-            }
+            }*/
             // TODO: use this.Content to load your game content here
         }
         DrawableEntity.EntityRotation entityRotation = DrawableEntity.EntityRotation.None;
@@ -125,7 +124,21 @@ namespace PixelFactory
                 Exit();
             currentMousePos = Mouse.GetState().Position;
             Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
-            /*if(lastAction == null)
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                Vector2 pos =mousePos - map.MapOffset;
+                Entity entity = entityManager.GetFromPosition(pos);
+                if(entity == null)
+                {
+                    Belt dynBelt = new Belt(_spriteBatch);
+                    dynBelt.Position = pos;
+                    dynBelt.Id = belt.Id;
+                    dynBelt.ProcessingTime=belt.ProcessingTime;
+                    dynBelt.Rotate(DrawableEntity.EntityRotation.Rot180);
+                    entityManager.Add(dynBelt);
+                }
+            }
+            if(lastAction == null)
             {
                 lastAction = new GameTime(gameTime.TotalGameTime,gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
             }
@@ -133,15 +146,13 @@ namespace PixelFactory
             {
                 if(gameTime.TotalGameTime.TotalSeconds - lastAction.TotalGameTime.TotalSeconds > 5)
                 {
-                    Rotate();
-                    belt.Rotate(entityRotation);
-                    if (belt.CanAcceptItemsFrom(ItemLogisticsComponentPort.PortDirection.N, belt.Position))
+                    if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, ItemLogisticsComponentPort.PortDirection.N, belt.Position);
+                        belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.N, belt.Position);
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
-            }*/
+            }
             entityManager.Update(gameTime);
             base.Update(gameTime);
         }

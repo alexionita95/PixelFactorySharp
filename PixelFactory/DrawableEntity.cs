@@ -67,9 +67,8 @@ namespace PixelFactory
             Vector2 pixelSize = Map.MapToScreen(rotatedSize.X, rotatedSize.Y);
 
             Vector2 newPos = Map.MapToScreen(Position.X, Position.Y);
-            // newPos.Y -= difference;
             float rotation = GetRotationAngle();
-            float difference = 0;
+            float difference;
             switch (Rotation)
             {
                 case EntityRotation.None:
