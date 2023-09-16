@@ -1,32 +1,27 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PixelFactory.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PixelFactory
 {
-    public class MapTile
+    public class MapTile : DrawableEntity
     {
-        public Vector2 Position { get; set; }
-        private SpriteBatch spriteBatch;
         public string Type { get; set; }
         public MapTile(SpriteBatch spriteBatch, string type)
+            :base(spriteBatch, Vector2.One)
         {
             this.spriteBatch = spriteBatch;
             Type = type;
+            Layer = DrawLayer.Map;
         }
-        public void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime)
         {
-            int mapX = (int)Position.X;
-            int mapY = (int)Position.Y;
-            Vector2 screenPosition = Map.MapToScreen(mapX, mapY);
-            spriteBatch.Draw(ContentManager.Instance.GetTileTexture(Type), screenPosition, null, Color.White,0, Vector2.Zero,1,SpriteEffects.None, 1f );
+            Texture = ContentManager.Instance.GetTileTexture(Type);
+            base.Draw(gameTime);
         }
     }
-
     public class MapChunk
     {
         SpriteBatch spriteBatch;
@@ -68,22 +63,10 @@ namespace PixelFactory
         }
         public static Vector2 MapToScreen(float mapX, float mapY)
         {
-            /*float x = (mapX - mapY) * TileWidth / 2;
-            float y = (mapX + mapY) * TileHeight / 2;*/
-
             return new Vector2(mapX*TileSize,mapY*TileSize);
         }
         public static Vector2 ScreenToMap(int screenX, int screenY)
         {
-            /*int halfTileWidth = TileWidth / 2;
-            int halfTileHeight = TileHeight / 2;
-
-            int tileX = (screenX / halfTileWidth + screenY / halfTileHeight) / 2;
-            int tileY = (screenY / halfTileHeight - screenX / halfTileWidth) / 2;*/
-
-            // int x = (int)Math.Floor(Math.Floor(screenX/(tileWidth/2) + screenY/(tileHeight/2))/2);
-            //int y = (int)Math.Floor(Math.Floor(screenY/(tileHeight/2) - screenX/(tileWidth/2))/2)+1;
-
             return new Vector2(MathF.Floor(screenX/TileSize), MathF.Floor(screenY/TileSize));
         }
         public MapChunk GenerateChunk(int chunkX, int chunkY)
@@ -116,13 +99,6 @@ namespace PixelFactory
             {
                 chunk.Draw(gameTime);
             }
-            /* for (int chunkY = 0; chunkY < MapSize; ++chunkY)
-             {
-                 for(int chunkX = 0; chunkX <MapSize; ++chunkX)
-                 {
-                     DrawChunk(new Vector2(chunkX*ChunkSize,chunkY*ChunkSize));                   
-                 }
-             }*/
         }
 
     }

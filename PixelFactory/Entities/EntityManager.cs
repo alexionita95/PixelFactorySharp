@@ -5,18 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelFactory
+namespace PixelFactory.Entities
 {
     public class EntityManager
     {
         private List<Entity> entities;
-        public EntityManager() 
+        public EntityManager()
         {
             entities = new List<Entity>();
         }
 
-        public void Add(Entity entity) 
-        { 
+        public void Add(Entity entity)
+        {
             entities.Add(entity);
             entity.EntityManager = this;
         }
@@ -29,7 +29,7 @@ namespace PixelFactory
         {
             foreach (var entity in entities)
             {
-                if(entity is DrawableEntity)
+                if (entity is DrawableEntity)
                 {
                     var drawable = entity as DrawableEntity;
                     var bounds = new Rectangle(drawable.Position.ToPoint(), drawable.Size.ToPoint());
@@ -49,9 +49,9 @@ namespace PixelFactory
                 entity.Update(gameTime);
             }
         }
-        public void Draw(GameTime gameTime) 
+        public void Draw(GameTime gameTime)
         {
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 if (entity is DrawableEntity)
                 {

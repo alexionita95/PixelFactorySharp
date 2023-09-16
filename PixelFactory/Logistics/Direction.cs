@@ -1,6 +1,7 @@
 ﻿using System;
-using  Microsoft.Xna.Framework;
-using static PixelFactory.DrawableEntity;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Xna.Framework;
+using static PixelFactory.Entities.DrawableEntity;
 
 namespace PixelFactory.Logistics
 {
@@ -35,7 +36,6 @@ namespace PixelFactory.Logistics
                 return true;
             return false;
         }
-
         public static Direction GetRotatedDirection(Direction direction, EntityRotation rotation, bool back = false)
         {
             int increment = 0;
@@ -73,7 +73,6 @@ namespace PixelFactory.Logistics
             }
             return Direction.N;
         }
-
         public static uint GetRotatedPosition(Direction direction, uint position, EntityRotation rotation, Vector2 size)
         {
             var rotatedDir = GetRotatedDirection(direction, rotation);
@@ -91,22 +90,41 @@ namespace PixelFactory.Logistics
             }
             return position;
         }
-
         public static Vector2 GetEdgePosition(Direction direction, uint position, EntityRotation rotation, Vector2 size)
         {
-            var rotatedDirection = GetRotatedDirection(direction,rotation);
-            var rotatedPosition = GetRotatedPosition(direction, position, rotation, size) + 1;
-
+            var rotatedDirection = GetRotatedDirection(direction, rotation);
+            var rotatedPosition = GetRotatedPosition(direction, position, rotation, size);
+            var coordinate = rotatedPosition * 0.5f + 0.5f;
             switch (rotatedDirection)
             {
                 case Direction.N:
-                    return new Vector2(rotatedPosition, 0);
+                    return new Vector2(coordinate, 0);
                 case Direction.S:
-                    return new Vector2(rotatedPosition, size.Y + 1);
+                    return new Vector2(coordinate, size.Y);
                 case Direction.E:
-                    return new Vector2(0, rotatedPosition);
+                    return new Vector2(0, coordinate);
                 case Direction.W:
-                    return new Vector2(size.X + 1, rotatedPosition);
+                    return new Vector2(size.X, coordinate);
+            }
+
+            return Vector2.Zero;
+        }
+
+        public static Vector2 GetInsideEdgePosition(Direction direction, uint position, EntityRotation rotation, Vector2 size, Vector2 scale)
+        {
+            var rotatedDirection = GetRotatedDirection(direction, rotation);
+            var rotatedPosition = GetRotatedPosition(direction, position, rotation, size);
+            var coordinate = rotatedPosition * 0.5f + 0.5f;
+            switch (rotatedDirection)
+            {
+                case Direction.N:
+                    return new Vector2(coordinate - scale.X/2, -scale.Y/2);
+                case Direction.S:
+                    return new Vector2(coordinate -scale.X/2, size.Y - scale.Y/2);
+                case Direction.E:
+                    return new Vector2(-scale.X/2, coordinate -scale.Y/2);
+                case Direction.W:
+                    return new Vector2(size.X-scale.X/2, coordinate - scale.Y/2);
             }
 
             return Vector2.Zero;
@@ -129,20 +147,21 @@ namespace PixelFactory.Logistics
             }
             return portPosition;
         }
-
         public static Vector2 GetNextPosition(Direction direction, uint position, EntityRotation rotation, Vector2 origin, Vector2 size)
         {
             var dir = GetRotatedDirection(direction, rotation);
-            Vector2 edgePos = DirectionUtils.GetEdgePosition(direction, position, rotation, size);
+            Vector2 edgePos = GetEdgePosition(direction, position, rotation, size);
             edgePos += origin;
             switch (dir)
             {
                 case Direction.N:
+                    return new Vector2((int)edgePos.X, (int)edgePos.Y -1);
                 case Direction.S:
-                    return new Vector2(edgePos.X - 1, edgePos.Y - 1);
+                    return new Vector2((int)edgePos.X, (int)edgePos.Y + size.Y - 1);
                 case Direction.W:
+                    return new Vector2((int)edgePos.X + size.X - 1, (int)edgePos.Y);
                 case Direction.E:
-                    return new Vector2(edgePos.X - 1, edgePos.Y - 1);
+                    return new Vector2((int)edgePos.X - 1, (int)edgePos.Y);
             }
             return Vector2.Zero;
         }

@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using PixelFactory.Items;
 using System.Net;
 
-namespace PixelFactory
+namespace PixelFactory.Utils
 {
     public class PathInterpolator
     {
         public List<Vector2> Points { get; private set; }
-        public PathInterpolator() {
-        Points = new List<Vector2>();
+        public PathInterpolator()
+        {
+            Points = new List<Vector2>();
         }
         public void AddPoint(Vector2 point)
         {
@@ -46,9 +47,9 @@ namespace PixelFactory
                 {
                     double localProgress = progress - lastProgress;
                     float interpolationStep = HelperFunctions.Remap((float)progress, lastProgress, lengthProgress, 0, 1);
-                    float x = HelperFunctions.Interpolate(Points[i].X, Points[i + 1].X,interpolationStep) ;
-                    float y = HelperFunctions.Interpolate(Points[i].Y, Points[i+1].Y, interpolationStep);
-                    return new Vector2(x,y);
+                    float x = HelperFunctions.Interpolate(Points[i].X, Points[i + 1].X, interpolationStep);
+                    float y = HelperFunctions.Interpolate(Points[i].Y, Points[i + 1].Y, interpolationStep);
+                    return new Vector2(x, y);
                 }
             }
             return Vector2.Zero;

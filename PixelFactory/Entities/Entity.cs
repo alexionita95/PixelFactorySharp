@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace PixelFactory
+namespace PixelFactory.Entities
 {
     public class Entity
     {

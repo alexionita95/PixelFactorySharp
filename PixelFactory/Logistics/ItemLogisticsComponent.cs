@@ -3,21 +3,26 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using PixelFactory.Items;
+using PixelFactory.Entities;
+using PixelFactory.Utils;
 
 namespace PixelFactory.Logistics
 {
     public class ItemLogisticsComponent : DrawableEntity
     {
-        public int ItemCountLimit { get; set; } = 10;
+        public int ItemCountLimit { get; set; } = 4;
         public List<ItemLogisticsComponentPort> Inputs { get; set; }
         public List<ItemLogisticsComponentPort> Outputs { get; set; }
         public float ProcessingTime { get; set; }
         public int CurrentOutputIndex { get; set; } = 0;
+        public Vector2 ItemScale { get; set; }
         public ItemLogisticsComponent(SpriteBatch spriteBatch, Vector2 size)
        : base(spriteBatch, size)
         {
             Inputs = new List<ItemLogisticsComponentPort>();
             Outputs = new List<ItemLogisticsComponentPort>();
+            Layer = DrawLayer.Buildings;
+            ItemScale = new Vector2(.25f, .25f);
         }
         public bool IsFull()
         {
@@ -46,8 +51,8 @@ namespace PixelFactory.Logistics
         {
             var startPort = GetInput(item.SourceDirection, item.SourcePosition);
             var endPort = GetOutput(item.DestinationDirection, item.DestinationPosition);
-            Vector2 startPos = DirectionUtils.GetEdgePosition(startPort.Direction,startPort.Position, Rotation,rotatedSize);
-            Vector2 endPos = DirectionUtils.GetEdgePosition(endPort.Direction, endPort.Position, Rotation, rotatedSize);
+            Vector2 startPos = DirectionUtils.GetInsideEdgePosition(startPort.Direction,startPort.Position, Rotation,rotatedSize, item.Scale);
+            Vector2 endPos = DirectionUtils.GetInsideEdgePosition(endPort.Direction, endPort.Position, Rotation, rotatedSize, item.Scale);
             bool straight = HelperFunctions.IsStraightLine(startPos, endPos);
             PathInterpolator interpolator = new PathInterpolator();
             interpolator.AddPoint(startPos);
@@ -58,7 +63,7 @@ namespace PixelFactory.Logistics
             }
             else
             {
-                Vector2 midPoint = HelperFunctions.GetMidPoint(startPos, endPos);
+                Vector2 midPoint = HelperFunctions.GetMidPoint(startPos, endPos, rotatedSize, ItemScale/2);
                 interpolator.AddPoint(midPoint);
                 interpolator.AddPoint(endPos);
                 return interpolator.Interpolate(item.Progress);
@@ -144,12 +149,14 @@ namespace PixelFactory.Logistics
                 {
                     return;
                 }
-                LogisticsItem logisticsComponentItem = new LogisticsItem(item);
+                LogisticsItem logisticsComponentItem = new LogisticsItem(item, spriteBatch);
                 logisticsComponentItem.SourcePosition = port.Position;
                 logisticsComponentItem.SourceDirection = port.Direction;
                 var currentOutputPort = Outputs[CurrentOutputIndex];
                 logisticsComponentItem.DestinationDirection = currentOutputPort.Direction;
                 logisticsComponentItem.DestinationPosition = currentOutputPort.Position;
+                logisticsComponentItem.Position = Position;
+                logisticsComponentItem.Scale = ItemScale;
                 port.Items.Add(logisticsComponentItem);
             }
         }
@@ -164,7 +171,7 @@ namespace PixelFactory.Logistics
                 {
                     return;
                 }
-                LogisticsItem logisticsComponentItem = new LogisticsItem(item);
+                LogisticsItem logisticsComponentItem = new LogisticsItem(item, spriteBatch);
                 port.Items.Add(logisticsComponentItem);
             }
         }
@@ -177,7 +184,7 @@ namespace PixelFactory.Logistics
                 var rotatedPosition = DirectionUtils.GetRotatedPosition(input.Direction, input.Position, Rotation, rotatedSize);
                 if (rotatedDirection == direction && rotatedPosition == portPosition)
                 {
-                    if (!IsFull() && CanMove(DirectionUtils.GetEdgePosition(input.Direction, input.Position, Rotation, rotatedSize)))
+                    if (!IsFull() && CanMove(DirectionUtils.GetInsideEdgePosition(input.Direction, input.Position, Rotation, rotatedSize, ItemScale)))
                         return true;
                 }
             }
@@ -254,7 +261,7 @@ namespace PixelFactory.Logistics
             var pos = GetClosestItem(position, filter);
             if (pos == float.MaxValue)
                 return true;
-            if (pos < .5f)
+            if (pos < ItemScale.X)
                 return false;
             return true;
         }

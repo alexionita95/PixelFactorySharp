@@ -7,7 +7,6 @@ namespace PixelFactory.Logistics
     public class Belt : ItemLogisticsComponent
     {
         public int ItemLimit { get; set; } = 10;
-        private float itemScale = 0.25f;
 
         public Belt(SpriteBatch spriteBatch) : base(spriteBatch, Vector2.One)
         {
@@ -20,7 +19,7 @@ namespace PixelFactory.Logistics
         {
             base.Update(gameTime);
         }
-        private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports)
+        private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports, GameTime gameTime)
         {
             foreach (var port in ports)
             {
@@ -28,26 +27,25 @@ namespace PixelFactory.Logistics
                 {
                     foreach (var item in port.Items)
                     {
-                        DrawItemOnBelt(item);
+                        DrawItemOnBelt(item, gameTime);
                     }
                 }
             }
         }
-        private void DrawItemOnBelt(LogisticsItem item)
+        private void DrawItemOnBelt(LogisticsItem item, GameTime gameTime)
         {
-            float scaleWidth = itemScale * Map.TileSize;
-            float scaleHeight = itemScale * Map.TileSize;
             var pos = Map.MapToScreen(Position.X, Position.Y);
-            Texture2D itemTexture = ContentManager.Instance.GetItemTexture(item.Item.Id);
             var itemPos = GetItemPosition(item);
-            itemPos = new Vector2(itemPos.X * Map.TileSize / 2, itemPos.Y * Map.TileSize / 2);
-            spriteBatch.Draw(itemTexture, new Rectangle((int)(pos.X + itemPos.X - scaleWidth / 2), (int)(pos.Y + itemPos.Y - scaleHeight / 2), (int)scaleWidth, (int)scaleHeight),null, Color.White,0f,Vector2.Zero,SpriteEffects.None,0f);
+            itemPos = new Vector2(itemPos.X * Map.TileSize, itemPos.Y * Map.TileSize) + pos;
+            item.LogisticPosition = itemPos;
+            item.Draw(gameTime);
         }
         public override void Draw(GameTime gameTime)
         {
+            Texture = ContentManager.Instance.GetBuildingTexture(Id);
             base.Draw(gameTime);
-            DrawPortsOnBelt(Outputs);
-            DrawPortsOnBelt(Inputs);
+            DrawPortsOnBelt(Outputs, gameTime);
+            DrawPortsOnBelt(Inputs, gameTime);
         }
     }
 }

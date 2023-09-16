@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace PixelFactory
+namespace PixelFactory.Utils
 {
     public class HelperFunctions
     {
@@ -24,15 +24,16 @@ namespace PixelFactory
             if (value == min || value == max) return true;
             return false;
         }
-        public static Vector2 GetMidPoint(Vector2 start, Vector2 end)
+        public static Vector2 GetMidPoint(Vector2 start, Vector2 end, Vector2 size, Vector2 scale)
         {
             float midX = 0;
             float midY = 0;
-            if (IsOnEdge(start.X, 0, 2))
+
+            if (IsOnEdge(start.X, -scale.X, size.X - scale.X))
                 midX = end.X;
             else
                 midX = start.X;
-            if (IsOnEdge(start.Y, 0, 2))
+            if (IsOnEdge(start.Y, -scale.Y, size.Y - scale.Y))
                 midY = end.Y;
             else
                 midY = start.Y;
