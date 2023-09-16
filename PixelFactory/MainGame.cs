@@ -21,6 +21,7 @@ namespace PixelFactory
         Point currentMousePos;
         Map map;
         EntityManager entityManager;
+        float zoom = 1f;
 
 
 
@@ -124,10 +125,11 @@ namespace PixelFactory
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             currentMousePos = Mouse.GetState().Position;
-            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
+            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y, zoom);
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 Vector2 pos = mousePos - map.MapOffset;
+                pos *= zoom;
                 Entity entity = entityManager.GetFromPosition(pos);
                 if (entity == null)
                 {
@@ -165,16 +167,17 @@ namespace PixelFactory
             _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
             map.Draw(gameTime);
             entityManager.Draw(gameTime);
-            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y);
+            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y, zoom);
             //DrawChunk(ScreenToMap(_graphics.PreferredBackBufferWidth/2,_graphics.PreferredBackBufferHeight/2));
-            _spriteBatch.Draw(gridTexture, Map.MapToScreen((int)mousePos.X, (int)mousePos.Y), Color.White);
-            Entity entity = entityManager.GetFromPosition(mousePos - map.MapOffset);
-            string text = $"Coords:({mousePos.X - map.MapOffset.X}, {mousePos.Y - map.MapOffset.Y})";
+            _spriteBatch.Draw(gridTexture,new Rectangle(((Map.MapToScreen((int)mousePos.X, (int)mousePos.Y))*zoom).ToPoint(),new Vector2(gridTexture.Width*zoom, gridTexture.Height * zoom).ToPoint()), Color.White);
+            Vector2 pos = mousePos - map.MapOffset;
+            Entity entity = entityManager.GetFromPosition(pos);
+            string text = $" FPS:{Math.Ceiling(1/gameTime.ElapsedGameTime.TotalSeconds)} Coords:({pos.X}, {pos.Y})";
             if (entity != null)
             {
                 text = $"{text} Entity: #{entity.Id}";
             }
-            _spriteBatch.DrawString(debugFont, text, new Vector2(0, 0), Color.White);
+            _spriteBatch.DrawString(debugFont, text, new Vector2(0, 0), Color.Black);
             _spriteBatch.End();
             base.Draw(gameTime);
 

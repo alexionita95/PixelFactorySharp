@@ -65,9 +65,9 @@ namespace PixelFactory
         {
             return new Vector2(mapX*TileSize,mapY*TileSize);
         }
-        public static Vector2 ScreenToMap(int screenX, int screenY)
+        public static Vector2 ScreenToMap(int screenX, int screenY, float zoom = 1)
         {
-            return new Vector2(MathF.Floor(screenX/TileSize), MathF.Floor(screenY/TileSize));
+            return new Vector2(MathF.Floor(screenX/(TileSize*zoom)), MathF.Floor(screenY/(TileSize*zoom)));
         }
         public MapChunk GenerateChunk(int chunkX, int chunkY)
         {

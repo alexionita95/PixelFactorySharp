@@ -26,6 +26,7 @@ namespace PixelFactory.Entities
         public EntityRotation Rotation { get => rotation; set { rotation = value; Rotate(); } }
         public Vector2 Size { get; private set; }
         public Vector2 Scale { get; set; } = Vector2.One;
+        public float Zoom { get; set; } = 1f;
         public DrawLayer Layer { get; set; }
         protected Vector2 rotatedSize;
         protected Vector2 drawPosititon;
@@ -91,9 +92,9 @@ namespace PixelFactory.Entities
         {
             float layer = GetDrawLayer();
             float rotation = GetRotationAngle();
-            float scaleWidth = Texture.Width * Scale.X;
-            float scaleHeight = Texture.Height * Scale.Y;
-            spriteBatch.Draw(Texture, new Rectangle((int)drawPosititon.X + (int)scaleWidth / 2, (int)drawPosititon.Y + (int)scaleHeight / 2, (int)scaleWidth, (int)scaleHeight), new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), SpriteEffects.None, layer);
+            float scaleWidth = Texture.Width * Scale.X * Zoom;
+            float scaleHeight = Texture.Height * Scale.Y * Zoom;
+            spriteBatch.Draw(Texture, new Rectangle((int)((drawPosititon.X * Zoom + (int)scaleWidth / 2)), (int)((drawPosititon.Y * Zoom + (int)scaleHeight / 2)), (int)scaleWidth, (int)scaleHeight), new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), SpriteEffects.None, layer);
         }
     }
 }
