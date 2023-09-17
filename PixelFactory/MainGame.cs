@@ -21,7 +21,7 @@ namespace PixelFactory
         Point currentMousePos;
         Map map;
         EntityManager entityManager;
-        float zoom = 1f;
+        Camera camera;
 
 
 
@@ -33,7 +33,11 @@ namespace PixelFactory
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 800;  // set this value to the desired width of your window
             _graphics.PreferredBackBufferHeight = 800;
+            camera = new Camera(Vector2.Zero, new Vector2(400, 400));
             entityManager = new EntityManager();
+            entityManager.Camera = camera;
+            camera.Zoom = 1;
+
         }
 
         protected override void Initialize()
@@ -48,7 +52,7 @@ namespace PixelFactory
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             gridTexture = Content.Load<Texture2D>("gridSelector");
             map = new Map(_spriteBatch);
-            //  map.MapOffset = Map.ScreenToMap(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/4);
+            // map.MapOffset = Map.ScreenToMap(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/4);
             ContentManager.Instance.AddTileTexture("debug", Content.Load<Texture2D>("debugGrid"));
             ContentManager.Instance.AddItemTexture("debugItem", Content.Load<Texture2D>("debugItem"));
             ContentManager.Instance.AddBuildingTexture("debugBelt", Content.Load<Texture2D>("debugBelt"));
@@ -81,36 +85,36 @@ namespace PixelFactory
                 entityManager.Add(dynBelt);
             }
             lastPos = new Vector2(lastPos.X, lastPos.Y + i - 1);
-             for(i= 1;i < 4; ++i)
-             {
-                 Belt dynBelt = new Belt(_spriteBatch);
-                 dynBelt.Position = new Vector2(lastPos.X - i, lastPos.Y);
-                 dynBelt.Id = belt.Id;
-                 dynBelt.ProcessingTime = belt.ProcessingTime;
-                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
-                 entityManager.Add(dynBelt);
-             }
-             lastPos = new Vector2(lastPos.X - i , lastPos.Y+1);
-             for (i = 1; i < 5; ++i)
-             {
-                 Belt dynBelt = new Belt(_spriteBatch);
-                 dynBelt.Position = new Vector2(lastPos.X, lastPos.Y - i);
-                 dynBelt.Id = belt.Id;
-                 dynBelt.ProcessingTime = belt.ProcessingTime;
-                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot180;
-                 entityManager.Add(dynBelt);
-             }
+            for (i = 1; i < 4; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X - i, lastPos.Y);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
+                entityManager.Add(dynBelt);
+            }
+            lastPos = new Vector2(lastPos.X - i, lastPos.Y + 1);
+            for (i = 1; i < 5; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X, lastPos.Y - i);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotation = DrawableEntity.EntityRotation.Rot180;
+                entityManager.Add(dynBelt);
+            }
 
-             lastPos = new Vector2(lastPos.X - 1, lastPos.Y - i);
-             for (i = 1; i < 5; ++i)
-             {
-                 Belt dynBelt = new Belt(_spriteBatch);
-                 dynBelt.Position = new Vector2(lastPos.X + i, lastPos.Y);
-                 dynBelt.Id = belt.Id;
-                 dynBelt.ProcessingTime = belt.ProcessingTime;
-                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot270;
-                 entityManager.Add(dynBelt);
-             }
+            lastPos = new Vector2(lastPos.X - 1, lastPos.Y - i);
+            for (i = 1; i < 5; ++i)
+            {
+                Belt dynBelt = new Belt(_spriteBatch);
+                dynBelt.Position = new Vector2(lastPos.X + i, lastPos.Y);
+                dynBelt.Id = belt.Id;
+                dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Rotation = DrawableEntity.EntityRotation.Rot270;
+                entityManager.Add(dynBelt);
+            }
             // TODO: use this.Content to load your game content here
         }
         DrawableEntity.EntityRotation entityRotation = DrawableEntity.EntityRotation.None;
@@ -120,16 +124,59 @@ namespace PixelFactory
             entityRotation = (DrawableEntity.EntityRotation)(((uint)(entityRotation) + 1) % length);
         }
         GameTime lastAction = null;
+
+        int previousScrollWheelValue = 0;
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                camera.Position = new Vector2(camera.Position.X + 1, camera.Position.Y);
+            }
+
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                camera.Position = new Vector2(camera.Position.X - 1, camera.Position.Y);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                camera.Position = new Vector2(camera.Position.X + 1, camera.Position.Y);
+            }
+
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                camera.Position = new Vector2(camera.Position.X, camera.Position.Y - 1);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                camera.Position = new Vector2(camera.Position.X, camera.Position.Y + 1);
+            }
+            float scrollDelta = Mouse.GetState().ScrollWheelValue - previousScrollWheelValue;
+
+            if (scrollDelta > 0)
+            {
+                camera.Zoom += 0.1f;
+            }
+            else if (scrollDelta < 0)
+            {
+                camera.Zoom -= 0.1f;
+            }
+
+            previousScrollWheelValue = Mouse.GetState().ScrollWheelValue;
+
             currentMousePos = Mouse.GetState().Position;
-            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y, zoom);
+            Point worldPos = camera.ScreenToWorld(currentMousePos.ToVector2()).ToPoint();
+            Vector2 mousePos = Map.ScreenToMap(worldPos.X, worldPos.Y, camera.Zoom);
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                Vector2 pos = mousePos - map.MapOffset;
-                pos *= zoom;
+                Vector2 pos = mousePos;
+                
                 Entity entity = entityManager.GetFromPosition(pos);
                 if (entity == null)
                 {
@@ -149,6 +196,7 @@ namespace PixelFactory
             {
                 if (gameTime.TotalGameTime.TotalSeconds - lastAction.TotalGameTime.TotalSeconds > 2)
                 {
+
                     if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
                         belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.N, belt.Position);
@@ -156,6 +204,7 @@ namespace PixelFactory
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
             }
+            map.SetZoom(camera.Zoom); 
             entityManager.Update(gameTime);
             base.Update(gameTime);
         }
@@ -164,20 +213,21 @@ namespace PixelFactory
         {
             GraphicsDevice.Clear(Color.Black);
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, transformMatrix: camera.TransformMatrix);
             map.Draw(gameTime);
             entityManager.Draw(gameTime);
-            Vector2 mousePos = Map.ScreenToMap(currentMousePos.X, currentMousePos.Y, zoom);
+            Point worldPos = camera.ScreenToWorld(currentMousePos.ToVector2()).ToPoint();
+            Vector2 mousePos = Map.ScreenToMap(worldPos.X, worldPos.Y, camera.Zoom);
             //DrawChunk(ScreenToMap(_graphics.PreferredBackBufferWidth/2,_graphics.PreferredBackBufferHeight/2));
-            _spriteBatch.Draw(gridTexture,new Rectangle(((Map.MapToScreen((int)mousePos.X, (int)mousePos.Y))*zoom).ToPoint(),new Vector2(gridTexture.Width*zoom, gridTexture.Height * zoom).ToPoint()), Color.White);
-            Vector2 pos = mousePos - map.MapOffset;
+            _spriteBatch.Draw(gridTexture, new Rectangle(((Map.MapToScreen((int)mousePos.X, (int)mousePos.Y)) * camera.Zoom).ToPoint(), new Vector2(gridTexture.Width * camera.Zoom, gridTexture.Height * camera.Zoom).ToPoint()), Color.White);
+            Vector2 pos = mousePos;
             Entity entity = entityManager.GetFromPosition(pos);
-            string text = $" FPS:{Math.Ceiling(1/gameTime.ElapsedGameTime.TotalSeconds)} Coords:({pos.X}, {pos.Y})";
+            string text = $" FPS:{Math.Ceiling(1 / gameTime.ElapsedGameTime.TotalSeconds)} Coords:({pos.X}, {pos.Y})";
             if (entity != null)
             {
                 text = $"{text} Entity: #{entity.Id}";
             }
-            _spriteBatch.DrawString(debugFont, text, new Vector2(0, 0), Color.Black);
+            _spriteBatch.DrawString(debugFont, text, camera.ScreenToWorld(new Vector2(0, 0)), Color.White);
             _spriteBatch.End();
             base.Draw(gameTime);
 

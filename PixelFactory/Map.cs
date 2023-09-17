@@ -38,6 +38,13 @@ namespace PixelFactory
         {
             tiles.Add(tile);
         }
+        public void SetZoom(float zoom)
+        {
+            foreach(var tile in tiles)
+            {
+                tile.Zoom = zoom;
+            }
+        }
         public void Draw(GameTime gameTime)
         {
             foreach (MapTile tile in tiles)
@@ -69,6 +76,19 @@ namespace PixelFactory
         {
             return new Vector2(MathF.Floor(screenX/(TileSize*zoom)), MathF.Floor(screenY/(TileSize*zoom)));
         }
+        public static Vector2 ScreenToMap(Vector2 position, float zoom = 1)
+        {
+            return new Vector2(MathF.Floor(position.X / (TileSize * zoom)), MathF.Floor(position.Y / (TileSize * zoom)));
+        }
+
+        public void SetZoom(float zoom)
+        {
+            foreach(MapChunk chunk in chunks)
+            {
+                chunk.SetZoom(zoom);
+            }
+        }
+
         public MapChunk GenerateChunk(int chunkX, int chunkY)
         {
             MapChunk chunk = new MapChunk(spriteBatch);

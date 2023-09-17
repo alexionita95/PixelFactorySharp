@@ -10,6 +10,7 @@ namespace PixelFactory.Entities
     public class EntityManager
     {
         private List<Entity> entities;
+        public Camera Camera { get; set; }
         public EntityManager()
         {
             entities = new List<Entity>();
@@ -56,6 +57,7 @@ namespace PixelFactory.Entities
                 if (entity is DrawableEntity)
                 {
                     var drawable = entity as DrawableEntity;
+                    drawable.Zoom = Camera.Zoom;
                     drawable.Draw(gameTime);
                 }
             }

@@ -35,6 +35,7 @@ namespace PixelFactory.Logistics
         private void DrawItemOnBelt(LogisticsItem item, GameTime gameTime)
         {
             var pos = Map.MapToScreen(Position.X, Position.Y);
+            item.Zoom = Zoom;
             var itemPos = GetItemPosition(item);
             itemPos = new Vector2(itemPos.X * Map.TileSize, itemPos.Y * Map.TileSize) + pos;
             item.LogisticPosition = itemPos;
