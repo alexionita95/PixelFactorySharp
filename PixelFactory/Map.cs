@@ -25,6 +25,7 @@ namespace PixelFactory
     public class MapChunk
     {
         SpriteBatch spriteBatch;
+        public Camera Camera { get; set; }
         List<MapTile> tiles;
         public Vector2 Position { get; set; }
         public Vector2 Offset { get; set; } = Vector2.Zero;
@@ -38,18 +39,15 @@ namespace PixelFactory
         {
             tiles.Add(tile);
         }
-        public void SetZoom(float zoom)
-        {
-            foreach(var tile in tiles)
-            {
-                tile.Zoom = zoom;
-            }
-        }
         public void Draw(GameTime gameTime)
         {
             foreach (MapTile tile in tiles)
             {
-                tile.Draw(gameTime);
+                if (Camera.IsInviewport(tile.Position, tile.Size))
+                {
+                    tile.Zoom = Camera.Zoom;
+                    tile.Draw(gameTime);
+                }
             }
         }
     }
@@ -59,6 +57,7 @@ namespace PixelFactory
         public static int ChunkSize { get; set; } = 16;
         public int MapSize { get; set; } = 2;
         public Vector2 MapOffset = Vector2.Zero;
+        public Camera Camera { get; set; }
 
 
         SpriteBatch spriteBatch;
@@ -79,14 +78,6 @@ namespace PixelFactory
         public static Vector2 ScreenToMap(Vector2 position, float zoom = 1)
         {
             return new Vector2(MathF.Floor(position.X / (TileSize * zoom)), MathF.Floor(position.Y / (TileSize * zoom)));
-        }
-
-        public void SetZoom(float zoom)
-        {
-            foreach(MapChunk chunk in chunks)
-            {
-                chunk.SetZoom(zoom);
-            }
         }
 
         public MapChunk GenerateChunk(int chunkX, int chunkY)
@@ -117,6 +108,7 @@ namespace PixelFactory
         {
             foreach (MapChunk chunk in chunks)
             {
+                chunk.Camera = Camera;
                 chunk.Draw(gameTime);
             }
         }

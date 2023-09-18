@@ -57,8 +57,11 @@ namespace PixelFactory.Entities
                 if (entity is DrawableEntity)
                 {
                     var drawable = entity as DrawableEntity;
-                    drawable.Zoom = Camera.Zoom;
-                    drawable.Draw(gameTime);
+                    if (Camera.IsInviewport(drawable.Position, drawable.Size))
+                    {
+                        drawable.Zoom = Camera.Zoom;
+                        drawable.Draw(gameTime);
+                    }
                 }
             }
         }
