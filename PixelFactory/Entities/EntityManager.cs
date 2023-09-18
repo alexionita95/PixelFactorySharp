@@ -22,7 +22,7 @@ namespace PixelFactory.Entities
             entity.EntityManager = this;
         }
 
-        public bool isInBounds(Vector2 position, Rectangle bounds)
+        public bool IsInBounds(Vector2 position, Rectangle bounds)
         {
             return position.X >= bounds.Left && position.X < bounds.Right && position.Y >= bounds.Top && position.Y < bounds.Bottom;
         }
@@ -34,7 +34,7 @@ namespace PixelFactory.Entities
                 {
                     var drawable = entity as DrawableEntity;
                     var bounds = new Rectangle(drawable.Position.ToPoint(), drawable.Size.ToPoint());
-                    if (isInBounds(positon, bounds))
+                    if (IsInBounds(positon, bounds))
                     {
                         return entity;
                     }

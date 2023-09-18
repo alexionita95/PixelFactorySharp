@@ -18,7 +18,6 @@ namespace PixelFactory
         }
         public override void Draw(GameTime gameTime)
         {
-            Texture = ContentManager.Instance.GetTileTexture(Type);
             base.Draw(gameTime);
         }
     }
@@ -59,13 +58,16 @@ namespace PixelFactory
         public Vector2 MapOffset = Vector2.Zero;
         public Camera Camera { get; set; }
 
+        private Dictionary<string, Texture2D> TileTextures { get; set; }
+
 
         SpriteBatch spriteBatch;
         List<MapChunk> chunks;
-        public Map(SpriteBatch _spriteBatch)
+        public Map(SpriteBatch _spriteBatch, Dictionary<string, Texture2D> tileTextures)
         {
             spriteBatch = _spriteBatch;
             chunks = new List<MapChunk>();
+            TileTextures = tileTextures;
         }
         public static Vector2 MapToScreen(float mapX, float mapY)
         {
@@ -88,6 +90,7 @@ namespace PixelFactory
                 for(int tileX = 0; tileX < ChunkSize;++tileX)
                 {
                     MapTile tile = new MapTile(spriteBatch,"debug");
+                    tile.Texture = TileTextures[tile.Type];
                     tile.Position = new Vector2(chunkX*ChunkSize + tileX + MapOffset.X, chunkY*ChunkSize + tileY + MapOffset.Y);
                     chunk.AddTile(tile);
                 }

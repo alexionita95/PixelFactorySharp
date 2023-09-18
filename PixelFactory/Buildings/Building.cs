@@ -17,7 +17,6 @@ namespace PixelFactory.Buildings
         protected GameTime lastAction;
         protected float rotation = 0;
 
-
         public float ProcessingTime { get; set; }
 
         public Building(SpriteBatch spriteBatch, Vector2 size)
@@ -29,7 +28,6 @@ namespace PixelFactory.Buildings
 
         public override void Draw(GameTime gameTime)
         {
-            Texture = ContentManager.Instance.GetBuildingTexture(Id);
             Vector2 pixelSize = Map.MapToScreen(rotatedSize.X, rotatedSize.Y);
 
             Vector2 newPos = Map.MapToScreen(Position.X, Position.Y);

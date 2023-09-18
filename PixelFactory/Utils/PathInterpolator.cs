@@ -45,7 +45,6 @@ namespace PixelFactory.Utils
                 float lengthProgress = localLength / totalLenght;
                 if (progress <= lengthProgress)
                 {
-                    double localProgress = progress - lastProgress;
                     float interpolationStep = HelperFunctions.Remap((float)progress, lastProgress, lengthProgress, 0, 1);
                     float x = HelperFunctions.Interpolate(Points[i].X, Points[i + 1].X, interpolationStep);
                     float y = HelperFunctions.Interpolate(Points[i].Y, Points[i + 1].Y, interpolationStep);

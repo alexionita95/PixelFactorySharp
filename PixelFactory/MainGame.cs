@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PixelFactory.Animations;
 using PixelFactory.Buildings;
 using PixelFactory.Entities;
 using PixelFactory.Logistics;
@@ -22,6 +23,8 @@ namespace PixelFactory
         Map map;
         EntityManager entityManager;
         Camera camera;
+        ContentManager contentManager;
+        AnimationManager animationManager;
 
 
 
@@ -37,6 +40,9 @@ namespace PixelFactory
             entityManager.Camera = camera;
             camera.Zoom = 1;
 
+            contentManager = new ContentManager();
+            animationManager = new AnimationManager();
+
         }
 
         protected override void Initialize()
@@ -50,23 +56,29 @@ namespace PixelFactory
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             gridTexture = Content.Load<Texture2D>("gridSelector");
-            map = new Map(_spriteBatch);
-            map.Camera = camera;
             // map.MapOffset = Map.ScreenToMap(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/4);
-            ContentManager.Instance.AddTileTexture("debug", Content.Load<Texture2D>("debugGrid"));
-            ContentManager.Instance.AddItemTexture("debugItem", Content.Load<Texture2D>("debugItem"));
-            ContentManager.Instance.AddBuildingTexture("debugBelt", Content.Load<Texture2D>("debugBelt"));
-            ContentManager.Instance.AddBuildingTexture("debugBuilding2x2", Content.Load<Texture2D>("debugBuilding2x2"));
+            contentManager.AddTileTexture("debug", Content.Load<Texture2D>("debugGrid"));
+            contentManager.AddTexture("debugItem", Content.Load<Texture2D>("debugItem"));
+            contentManager.AddTexture("debugBelt", Content.Load<Texture2D>("debugBelt"));
+            contentManager.AddTexture("debugBuilding2x2", Content.Load<Texture2D>("debugBuilding2x2"));
             debugFont = Content.Load<SpriteFont>("debug");
+            map = new Map(_spriteBatch, contentManager.TileTextures);
+            map.Camera = camera;
             map.Generate();
             building = new Building(_spriteBatch, new Vector2(2, 2));
             building.Position = new Vector2(10, 2) + map.MapOffset;
             building.Id = "debugBuilding2x2";
+            building.Texture = contentManager.GetTexture(building.Id);
             belt = new Belt(_spriteBatch);
             belt.Position = new Vector2(10, 4) + map.MapOffset;
             belt.Id = "debugBelt";
-            belt.ProcessingTime = 300;
-            belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.N, belt.Position);
+            belt.Texture = contentManager.GetTexture(belt.Id);
+            belt.ProcessingTime = 1000f;
+            belt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position) ;
+            
+            Animation animation = new Animation(belt.Texture, new Vector2(Map.TileSize, Map.TileSize), 250, true);
+            animationManager.AddAnimation(animation);
+            belt.Animation = animation;
             entityManager.Add(building);
             entityManager.Add(belt);
             Vector2 lastPos = belt.Position;
@@ -77,10 +89,12 @@ namespace PixelFactory
                 dynBelt.Position = new Vector2(lastPos.X, lastPos.Y + i);
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
+                dynBelt.Texture = belt.Texture;
+                dynBelt.Animation = belt.Animation;
                 if (i == 4)
                 {
                     dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
-                    dynBelt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.W, belt.Position);
+                    dynBelt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
                 }
                 entityManager.Add(dynBelt);
             }
@@ -92,6 +106,8 @@ namespace PixelFactory
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
+                dynBelt.Texture = belt.Texture;
+                dynBelt.Animation = belt.Animation;
                 entityManager.Add(dynBelt);
             }
             lastPos = new Vector2(lastPos.X - i, lastPos.Y + 1);
@@ -102,6 +118,8 @@ namespace PixelFactory
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot180;
+                dynBelt.Texture = belt.Texture;
+                dynBelt.Animation = belt.Animation;
                 entityManager.Add(dynBelt);
             }
 
@@ -113,6 +131,8 @@ namespace PixelFactory
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
                 dynBelt.Rotation = DrawableEntity.EntityRotation.Rot270;
+                dynBelt.Texture = belt.Texture;
+                dynBelt.Animation = belt.Animation;
                 entityManager.Add(dynBelt);
             }
             // TODO: use this.Content to load your game content here
@@ -189,6 +209,8 @@ namespace PixelFactory
                             dynBelt.Id = belt.Id;
                             dynBelt.ProcessingTime = belt.ProcessingTime;
                             dynBelt.Rotation = DrawableEntity.EntityRotation.Rot180;
+                            dynBelt.Texture = belt.Texture;
+                            dynBelt.Animation = belt.Animation;
                             entityManager.Add(dynBelt);
                         }
                     }
@@ -205,11 +227,12 @@ namespace PixelFactory
 
                     if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new Items.Item() { Id = "debugItem" }, Direction.N, belt.Position);
+                        belt.AddItemToInput(new Items.Item(_spriteBatch,Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
             }
+            animationManager.Update(gameTime);
             entityManager.Update(gameTime);
             base.Update(gameTime);
         }

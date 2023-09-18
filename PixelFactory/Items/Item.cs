@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using PixelFactory.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,9 +48,17 @@ namespace PixelFactory.Items
             Count = 0;
         }
     }
-    public class Item
+    public class Item : DrawableEntity
     {
-        public string Id { get; set; }
+        public Item(SpriteBatch spriteBatch, Vector2 size) : base(spriteBatch, size)
+        {
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+        }
+
         public string Name { get; set; }
 
     }

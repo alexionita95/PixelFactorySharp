@@ -43,7 +43,6 @@ namespace PixelFactory.Logistics
         }
         public override void Draw(GameTime gameTime)
         {
-            Texture = ContentManager.Instance.GetBuildingTexture(Id);
             base.Draw(gameTime);
             DrawPortsOnBelt(Outputs, gameTime);
             DrawPortsOnBelt(Inputs, gameTime);

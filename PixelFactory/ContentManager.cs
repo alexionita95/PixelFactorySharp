@@ -9,71 +9,34 @@ namespace PixelFactory
 {
     public class ContentManager
     {
-        private static ContentManager _instance;
-        public static ContentManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ContentManager();
-                }
-                return _instance;
-            }
-        }
-
-        private Dictionary<string, Texture2D> TileTextures;
-        private Dictionary<string, Texture2D> ItemTextures;
-        private Dictionary<string, Texture2D> BuildingTextures;
+        public Dictionary<string, Texture2D> TileTextures { get; private set; }
+        private Dictionary<string, Texture2D> Textures;
         private Dictionary<string, SpriteFont> Fonts;
-        private ContentManager()
+        public ContentManager()
         {
+            Textures = new Dictionary<string, Texture2D>();
             TileTextures = new Dictionary<string, Texture2D>();
-            ItemTextures = new Dictionary<string, Texture2D>();
-            BuildingTextures = new Dictionary<string, Texture2D>();
             Fonts = new Dictionary<string, SpriteFont>();
 
         }
 
+        public void AddTexture(string name, Texture2D texture)
+        {
+            Textures.Add(name, texture);
+        }
         public void AddTileTexture(string name, Texture2D texture)
         {
             TileTextures.Add(name, texture);
         }
-        public Texture2D GetTileTexture(string type)
+        public Texture2D GetTexture(string type)
         {
-            if (TileTextures.ContainsKey(type))
+            if (Textures.ContainsKey(type))
             {
-                return TileTextures[type];
+                return Textures[type];
             }
             return null;
         }
-        public void AddItemTexture(string name, Texture2D texture)
-        {
-            ItemTextures.Add(name, texture);
-        }
-        public Texture2D GetItemTexture(string type)
-        {
-            if (ItemTextures.ContainsKey(type))
-            {
-                return ItemTextures[type];
-            }
-            return null;
-        }
-
-        public void AddBuildingTexture(string name, Texture2D texture)
-        {
-            BuildingTextures.Add(name, texture);
-        }
-        public Texture2D GetBuildingTexture(string type)
-        {
-            if (BuildingTextures.ContainsKey(type))
-            {
-                return BuildingTextures[type];
-            }
-            return null;
-        }
-
-        public void AddBuildingTexture(string name, SpriteFont font)
+        public void AddFont(string name, SpriteFont font)
         {
             Fonts.Add(name, font);
         }

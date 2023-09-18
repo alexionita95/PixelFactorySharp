@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PixelFactory.Animations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace PixelFactory.Entities
         {
             None, Rot90, Rot180, Rot270
         }
+        public Texture2D Texture { get; set; }
+        public Animation Animation { get; set; } = null;
         public Vector2 Position { get => position; set { position = value; drawPosititon = Map.MapToScreen(value.X, value.Y); } }
         public EntityRotation Rotation { get => rotation; set { rotation = value; Rotate(); } }
         public Vector2 Size { get; private set; }
@@ -30,7 +33,7 @@ namespace PixelFactory.Entities
         public DrawLayer Layer { get; set; }
         protected Vector2 rotatedSize;
         protected Vector2 drawPosititon;
-        public Texture2D Texture;
+
         private Vector2 position;
         private EntityRotation rotation;
 
@@ -55,6 +58,8 @@ namespace PixelFactory.Entities
                 case DrawLayer.Items:
                 case DrawLayer.UI:
                     return 0;
+                default:
+                    break;
             }
             return 1;
         }
@@ -70,7 +75,8 @@ namespace PixelFactory.Entities
                     return MathHelper.ToRadians(180);
                 case EntityRotation.Rot270:
                     return MathHelper.ToRadians(270);
-
+                default:
+                    break;
             }
             return MathHelper.ToRadians(0);
         }
@@ -92,9 +98,16 @@ namespace PixelFactory.Entities
         {
             float layer = GetDrawLayer();
             float rotation = GetRotationAngle();
-            float scaleWidth = Texture.Width * Scale.X * Zoom;
-            float scaleHeight = Texture.Height * Scale.Y * Zoom;
-            spriteBatch.Draw(Texture, new Rectangle((int)((drawPosititon.X * Zoom + (int)scaleWidth / 2)), (int)((drawPosititon.Y * Zoom + (int)scaleHeight / 2)), (int)scaleWidth, (int)scaleHeight), new Rectangle(0, 0, Texture.Width, Texture.Height), Color.White, rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), SpriteEffects.None, layer);
+            Rectangle sourceRectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
+            Vector2 textureSize = new Vector2(Texture.Width, Texture.Height);
+            if(Animation != null)
+            {
+                sourceRectangle = Animation.CurrentFrame;
+                textureSize = Animation.FrameSize;
+            }
+            float scaleWidth = textureSize.X * Scale.X * Zoom;
+            float scaleHeight = textureSize.Y * Scale.Y * Zoom;
+            spriteBatch.Draw(Texture, new Rectangle((int)((drawPosititon.X * Zoom + (int)scaleWidth / 2)), (int)((drawPosititon.Y * Zoom + (int)scaleHeight / 2)), (int)scaleWidth, (int)scaleHeight), sourceRectangle, Color.White, rotation, new Vector2(textureSize.X / 2, textureSize.Y / 2), SpriteEffects.None, layer);
         }
     }
 }

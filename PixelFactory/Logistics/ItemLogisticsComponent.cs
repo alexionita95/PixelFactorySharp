@@ -29,11 +29,11 @@ namespace PixelFactory.Logistics
             int count = 0;
             foreach (var input in Inputs)
             {
-                count += input.Items.Count();
+                count += input.Items.Count;
             }
             foreach (var output in Outputs)
             {
-                count += output.Items.Count();
+                count += output.Items.Count;
             }
             return count >= ItemCountLimit;
         }
@@ -101,6 +101,8 @@ namespace PixelFactory.Logistics
                     return ValidatePositionOnPorts(direction, Inputs, position);
                 case ItemLogisticsComponentPort.PortType.Output:
                     return ValidatePositionOnPorts(direction, Outputs, position);
+                default:
+                    break;
             }
             return true;
         }

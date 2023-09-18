@@ -37,7 +37,7 @@ namespace PixelFactory.Logistics
         }
         public override void Draw(GameTime gameTime)
         {
-            Texture = ContentManager.Instance.GetItemTexture(Item.Id);
+            Texture = Item.Texture;
             drawPosititon = LogisticPosition;
             base.Draw(gameTime);
         }
