@@ -201,8 +201,6 @@ namespace PixelFactory.Logistics
                 var rotatedPosition = DirectionUtils.GetRotatedPosition(output.Direction, output.Position, Rotation, rotatedSize);
                 if (rotatedDirection == direction && rotatedPosition == portPosition)
                 {
-
-                    if (output.HasItems)
                         return true;
                 }
             }
@@ -267,6 +265,80 @@ namespace PixelFactory.Logistics
                 return false;
             return true;
         }
+        public int GetValidInputsCount()
+        {
+            int result = 0;
+            foreach (var input in Inputs)
+            {
+                Vector2 pos = DirectionUtils.GetNextPosition(input.Direction, input.Position, Rotation, Position, rotatedSize);
+                Entity entity = EntityManager.GetFromPosition(pos);
+                if (entity is ItemLogisticsComponent)
+                {
+                    var component = entity as ItemLogisticsComponent;
+                    var dir = DirectionUtils.GetRotatedDirection(input.Direction, Rotation);
+                    var opposite = DirectionUtils.GetOppositeDirection(dir);
+                    if (component.CanExportItemsTo(opposite, pos))
+                    {
+                        result++;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public bool ValidateInput(Direction direction)
+        {
+            foreach (var input in Inputs)
+            {
+                if (input.Direction == direction)
+                {
+                    Vector2 pos = DirectionUtils.GetNextPosition(input.Direction, input.Position, Rotation, Position, rotatedSize);
+                    Entity entity = EntityManager.GetFromPosition(pos);
+                    if(entity == null)
+                    {
+                        return false;
+                    }
+                    if (entity is ItemLogisticsComponent)
+                    {
+                        var component = entity as ItemLogisticsComponent;
+                        var dir = DirectionUtils.GetRotatedDirection(input.Direction, Rotation);
+                        var opposite = DirectionUtils.GetOppositeDirection(dir);
+                        if (component.CanExportItemsTo(opposite, pos))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        public bool ValidateOutput(Direction direction)
+        {
+            foreach (var output in Outputs)
+            {
+                if (output.Direction == direction)
+                {
+                    Vector2 pos = DirectionUtils.GetNextPosition(output.Direction, output.Position, Rotation, Position, rotatedSize);
+                    Entity entity = EntityManager.GetFromPosition(pos);
+                    if (entity == null)
+                    {
+                        return false;
+                    }
+                    if (entity is ItemLogisticsComponent)
+                    {
+                        var component = entity as ItemLogisticsComponent;
+                        var dir = DirectionUtils.GetRotatedDirection(output.Direction, Rotation);
+                        var opposite = DirectionUtils.GetOppositeDirection(dir);
+                        if (component.CanAcceptItemsFrom(opposite, pos))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

@@ -7,6 +7,7 @@ namespace PixelFactory.Logistics
     public class Belt : ItemLogisticsComponent
     {
         public int ItemLimit { get; set; } = 10;
+        public bool corner = false;
 
         public Belt(SpriteBatch spriteBatch) : base(spriteBatch, Vector2.One)
         {
@@ -17,6 +18,22 @@ namespace PixelFactory.Logistics
         }
         public override void Update(GameTime gameTime)
         {
+            int validInputs = GetValidInputsCount();
+            if (validInputs == 0)
+            {
+                corner = false;
+            }
+            if (validInputs == 1) 
+            {
+                if (ValidateInput(Direction.E) && ValidateOutput(Direction.S))
+                {
+                    corner = true;
+                }
+            }
+            if (validInputs > 1)
+            {
+                corner = false;
+            }
             base.Update(gameTime);
         }
         private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports, GameTime gameTime)
@@ -43,6 +60,14 @@ namespace PixelFactory.Logistics
         }
         public override void Draw(GameTime gameTime)
         {
+            if(corner)
+            {
+                Animation.CurrentRow = 1;
+            }
+            else
+            {
+                Animation.CurrentRow = 0;
+            }
             base.Draw(gameTime);
             DrawPortsOnBelt(Outputs, gameTime);
             DrawPortsOnBelt(Inputs, gameTime);

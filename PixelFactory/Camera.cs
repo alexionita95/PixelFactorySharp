@@ -38,7 +38,7 @@ namespace PixelFactory
 
         public bool IsInviewport(Vector2 position)
         {
-            Rectangle viwport = new Rectangle(new Vector2(Position.X, Position.Y).ToPoint(), viewportSize.ToPoint());
+            Rectangle viwport = new Rectangle(ScreenToWorld(new Vector2(Position.X, Position.Y)).ToPoint(), viewportSize.ToPoint());
             if (viwport.Contains(position.ToPoint()))
             {
                 return true;
