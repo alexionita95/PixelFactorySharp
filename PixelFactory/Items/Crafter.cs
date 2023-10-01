@@ -11,29 +11,29 @@ namespace PixelFactory.Items
     public class Crafter : Entity
     {
         public bool HasOutputItems { get => Outputs.Count > 0; }
-        public bool HasPendingJobs { get => pendingJobs.Count > 0; }
+        public bool HasPendingJobs { get => PendingJobs.Count > 0; }
         public bool HasActiveJobs { get=>ActiveJobs.Count > 0; }
         public int ParallelJobs { get; private set; } = 1;
         public List<CraftingJob> ActiveJobs { get; private set; }
         public Queue<ItemSlot> Outputs { get; private set; }
-        private Queue<CraftingJob> pendingJobs;
+        public Queue<CraftingJob> PendingJobs { get; private set; }
         public Crafter()
         {
             ActiveJobs = new List<CraftingJob>();
             Outputs = new Queue<ItemSlot>();
-            pendingJobs = new Queue<CraftingJob>();
+            PendingJobs = new Queue<CraftingJob>();
         }
         public Crafter(int parallelJobs)
         {
             Outputs = new Queue<ItemSlot>();
-            pendingJobs = new Queue<CraftingJob>();
+            PendingJobs = new Queue<CraftingJob>();
             ActiveJobs = new List<CraftingJob>();
             ParallelJobs = parallelJobs;
         }
         public Crafter(Recipe recipe, int count = 1, int parallelJobs = 1)
         {
             Outputs = new Queue<ItemSlot>();
-            pendingJobs = new Queue<CraftingJob>();
+            PendingJobs = new Queue<CraftingJob>();
             ActiveJobs= new List<CraftingJob>();
             ParallelJobs = parallelJobs;
             Enqueue(recipe, count);
@@ -42,7 +42,7 @@ namespace PixelFactory.Items
         {
             for(int i = 0; i < count; ++i) 
             {
-                pendingJobs.Enqueue(new CraftingJob(recipe));
+                PendingJobs.Enqueue(new CraftingJob(recipe));
             }
         }
         
@@ -97,7 +97,7 @@ namespace PixelFactory.Items
             {
                 for(int i =0; i< ParallelJobs - ActiveJobs.Count; ++i) 
                 {
-                    ActiveJobs.Add(pendingJobs.Dequeue());
+                    ActiveJobs.Add(PendingJobs.Dequeue());
                 }
             }
             base.Update(gameTime);

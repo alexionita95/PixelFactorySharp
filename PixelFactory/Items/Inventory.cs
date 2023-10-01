@@ -103,6 +103,7 @@ namespace PixelFactory.Items
                     return;
                 }
             }
+            Sort();
         }
         public void RemoveItem(Item item, int quantity)
         {
@@ -126,6 +127,7 @@ namespace PixelFactory.Items
                         return;
                 }
             }
+            Sort();
         }
         public bool HasItems(Item item, int quantity)
         {
@@ -175,6 +177,7 @@ namespace PixelFactory.Items
             {
                 slot.Update(gameTime);
             }
+            Sort();
             base.Update(gameTime);
         }
     }

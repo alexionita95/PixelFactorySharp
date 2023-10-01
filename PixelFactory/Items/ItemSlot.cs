@@ -74,12 +74,20 @@ namespace PixelFactory.Items
         public void RemoveItem()
         {
             Items.RemoveAt(Count - 1);
+            if(Count == 0)
+            {
+                Reset();
+            }
         }
         public bool RemoveItems(int count)
         {
             if (count > Count)
                 return false;
             Items.RemoveRange(Items.Count - count, count);
+            if(Count == 0)
+            {
+                Reset();
+            }
             return true;
         }
         public void Reset()

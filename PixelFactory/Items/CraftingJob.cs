@@ -14,19 +14,19 @@ namespace PixelFactory.Items
         public Queue<ItemSlot> Outputs { get; private set; }
         public bool HasOutputItems { get => Outputs.Count > 0; }
         public bool Finished { get; private set; }
-        private double progress = 0;
+        public double Progress { get; private set; } = 0;
         public CraftingJob() 
         { 
             Finished = false;
             Outputs = new Queue<ItemSlot>();
-            progress = 0;
+            Progress = 0;
         }
         public CraftingJob(Recipe recipe)
         {
             Recipe = recipe;
             Finished = false;
             Outputs = new Queue<ItemSlot>();
-            progress = 0;
+            Progress = 0;
         }
         public ItemSlot GetOutput()
         {
@@ -39,8 +39,8 @@ namespace PixelFactory.Items
                 return;
             }
             double step = gameTime.ElapsedGameTime.TotalMilliseconds / Recipe.Duration;
-            progress += step;
-            if (progress >= 1.0)
+            Progress += step;
+            if (Progress >= 1.0)
             {
                 foreach (RecipeItem item in Recipe.Outputs)
                 {
