@@ -46,6 +46,20 @@ namespace PixelFactory.Entities
             rotatedSize = size;
 
         }
+        public DrawableEntity(DrawableEntity entity) : base(entity)
+        {
+            Texture = entity.Texture;
+            Animation = entity.Animation;
+            Position = new Vector2(entity.Position.X, entity.position.Y);
+            Rotation = entity.Rotation;
+            Size = new Vector2(entity.Size.X, entity.Size.Y);
+            Scale = new Vector2(entity.Scale.X, entity.Scale.Y);
+            Zoom = entity.Zoom;
+            Layer= entity.Layer;
+            rotatedSize = new Vector2(entity.rotatedSize.X, entity.rotatedSize.Y);
+            drawPosititon = new Vector2(entity.drawPosititon.X, entity.drawPosititon.Y);
+            spriteBatch = entity.spriteBatch;
+        }
 
         public float GetDrawLayer()
         {

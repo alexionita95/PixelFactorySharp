@@ -7,6 +7,15 @@ namespace PixelFactory.Entities
 
         public string Id { get; set; }
         public EntityManager EntityManager { get; set; }
+
+        public Entity() 
+        {
+        }
+        public Entity(Entity entity)
+        {
+            Id = entity.Id;
+            EntityManager = entity.EntityManager;
+        }
         public virtual void Update(GameTime gameTime)
         {
 

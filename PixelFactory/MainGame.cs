@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using PixelFactory.Animations;
 using PixelFactory.Buildings;
 using PixelFactory.Entities;
+using PixelFactory.Items;
 using PixelFactory.Logistics;
 using System;
 using System.Diagnostics;
@@ -25,6 +26,8 @@ namespace PixelFactory
         Camera camera;
         ContentManager contentManager;
         AnimationManager animationManager;
+
+        Player player = new Player();
 
 
 
@@ -74,13 +77,28 @@ namespace PixelFactory
             belt.Id = "debugBelt";
             belt.Texture = contentManager.GetTexture(belt.Id);
             belt.ProcessingTime = 1000f;
-            belt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position) ;
-            
+            belt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+
             Animation animation = new Animation(belt.Texture, new Vector2(Map.TileSize, Map.TileSize), 250, true);
             animationManager.AddAnimation(animation);
             belt.Animation = animation;
             entityManager.Add(building);
             entityManager.Add(belt);
+
+            entityManager.Add(player);
+            Item debugItem1 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
+            Item debugItem2 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
+            Item debugItem3 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
+            Recipe recipe = new Recipe();
+            recipe.Duration = 15000;
+            recipe.AddInput(new RecipeItem(debugItem1, 2));
+            recipe.AddInput(new RecipeItem(debugItem2, 2));
+            recipe.AddOutput(new RecipeItem(debugItem3, 1));
+            player.AddItemsToInventory(debugItem1, 12);
+            player.AddItemsToInventory(debugItem2, 6);
+            player.DisplayDebugInventory();
+            player.Craft(recipe, 7);
+
             Vector2 lastPos = belt.Position;
             int i = 1;
             for (i = 1; i < 5; ++i)
@@ -227,7 +245,7 @@ namespace PixelFactory
 
                     if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new Items.Item(_spriteBatch,Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+                        belt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }

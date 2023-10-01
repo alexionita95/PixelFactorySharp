@@ -88,38 +88,16 @@ namespace PixelFactory.Buildings
         }
         public virtual bool CanAcceptInput(Item item)
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item == null || !slot.IsFull() && slot.Item.Id == item.Id && (slot.IsInput() || slot.IsIO()))
-                {
-                    return true;
-                }
-            }
             return false;
         }
 
 
         public virtual bool CanAcceptOutput(Item item)
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item == null || !slot.IsFull() && slot.Item.Id == item.Id && (slot.IsOutput() || slot.IsIO()))
-                {
-                    return true;
-                }
-            }
             return false;
         }
         public virtual bool CanAcceptInputItems()
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if ((slot.IsInput() || slot.IsIO()) && !slot.IsFull())
-                {
-                    return true;
-                }
-            }
-
             return false;
         }
 
@@ -138,63 +116,20 @@ namespace PixelFactory.Buildings
 
         public virtual bool AddInput(Item item)
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item == null || ((slot.IsInput() || slot.IsIO()) && !slot.IsFull() && slot.Item.Id == item.Id))
-                {
-                    slot.Item = item;
-                    slot.Count++;
-                    return true;
-                }
-            }
             return false;
         }
         public virtual bool AddOutput(Item item)
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item == null || ((slot.IsOutput() || slot.IsIO()) && !slot.IsFull() && slot.Item.Id == item.Id))
-                {
-                    slot.Item = item;
-                    slot.Count++;
-                    return true;
-                }
-            }
             return false;
         }
 
         public virtual bool RemoveInput(Item item)
         {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item != null && (slot.IsInput() || slot.IsIO()) && slot.Count > 0 && slot.Item.Id == item.Id)
-                {
-                    slot.Count--;
-                    if (slot.Count == 0)
-                    {
-                        slot.Reset();
-                    }
-                    return true;
-                }
-            }
             return false;
         }
 
         public virtual bool Remove(Item item)
-        {
-            foreach (ItemSlot slot in Inventory)
-            {
-                if (slot.Item != null && (slot.IsOutput() || slot.IsIO()) && slot.Count > 0 && slot.Item.Id == item.Id)
-                {
-                    slot.Item = item;
-                    slot.Count--;
-                    if (slot.Count == 0)
-                    {
-                        slot.Reset();
-                    }
-                    return true;
-                }
-            }
+        { 
             return false;
         }
     }
