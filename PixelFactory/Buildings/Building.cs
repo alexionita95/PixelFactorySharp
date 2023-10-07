@@ -13,7 +13,7 @@ namespace PixelFactory.Buildings
 {
     public class Building : DrawableEntity
     {
-        protected List<ItemSlot> Inventory;
+        protected List<InventorySlot> Inventory;
         protected GameTime lastAction;
         protected float rotation = 0;
 
@@ -22,7 +22,7 @@ namespace PixelFactory.Buildings
         public Building(SpriteBatch spriteBatch, Vector2 size)
             : base(spriteBatch, size)
         {
-            Inventory = new List<ItemSlot>();
+            Inventory = new List<InventorySlot>();
             Layer = DrawLayer.Buildings;
         }
 
@@ -54,7 +54,7 @@ namespace PixelFactory.Buildings
             drawPosititon = newPos;
             base.Draw(gameTime);
         }
-        public void AddInventorySlot(ItemSlot slot)
+        public void AddInventorySlot(InventorySlot slot)
         {
             Inventory.Add(slot);
         }
@@ -86,13 +86,13 @@ namespace PixelFactory.Buildings
             int outputCount = 0;
             return outputCount > 0;
         }
-        public virtual bool CanAcceptInput(Item item)
+        public virtual bool CanAcceptInput(InventoryEntity item)
         {
             return false;
         }
 
 
-        public virtual bool CanAcceptOutput(Item item)
+        public virtual bool CanAcceptOutput(InventoryEntity item)
         {
             return false;
         }
@@ -103,7 +103,7 @@ namespace PixelFactory.Buildings
 
         public bool CanExportItems()
         {
-            foreach (ItemSlot slot in Inventory)
+            foreach (InventorySlot slot in Inventory)
             {
                 if ((slot.IsOutput() || slot.IsIO()) && slot.Count > 0)
                 {
@@ -114,21 +114,21 @@ namespace PixelFactory.Buildings
             return false;
         }
 
-        public virtual bool AddInput(Item item)
+        public virtual bool AddInput(InventoryEntity item)
         {
             return false;
         }
-        public virtual bool AddOutput(Item item)
-        {
-            return false;
-        }
-
-        public virtual bool RemoveInput(Item item)
+        public virtual bool AddOutput(InventoryEntity item)
         {
             return false;
         }
 
-        public virtual bool Remove(Item item)
+        public virtual bool RemoveInput(InventoryEntity item)
+        {
+            return false;
+        }
+
+        public virtual bool Remove(InventoryEntity item)
         { 
             return false;
         }

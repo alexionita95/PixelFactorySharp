@@ -9,14 +9,14 @@ namespace PixelFactory.Items
 {
     public class RecipeItem
     {
-        public Item Item { get; set; }
+        public InventoryEntity Item { get; set; }
         public int Quantity { get; set; }
         public double Chance { get; set; } = 1;
         public RecipeItem()
         {
 
         }
-        public RecipeItem(Item item,int quantity)
+        public RecipeItem(InventoryEntity item,int quantity)
         {
             Item = item;
             Quantity = quantity;

@@ -8,13 +8,15 @@ namespace PixelFactory.Items
 {
     public class Inventory : Entity
     {
-        public List<ItemSlot> Slots { get; private set; }
+        public List<InventorySlot> Slots { get; private set; }
         public ulong Size { get; private set; } = 10;
+        public bool AutoSort {  get; set; } = true;
+        bool changed = false;
         public bool HasEmptySlot
         {
             get
             {
-                foreach (ItemSlot slot in Slots)
+                foreach (InventorySlot slot in Slots)
                     if (slot.IsEmpty)
                         return true;
                 return false;
@@ -25,7 +27,7 @@ namespace PixelFactory.Items
         {
             get
             {
-                foreach (ItemSlot slot in Slots)
+                foreach (InventorySlot slot in Slots)
                     if (!slot.IsFull)
                         return false;
                 return true;
@@ -33,12 +35,12 @@ namespace PixelFactory.Items
         }
         public Inventory()
         {
-            Slots = new List<ItemSlot>();
+            Slots = new List<InventorySlot>();
             Initialize();
         }
         public Inventory(ulong size)
         {
-            Slots = new List<ItemSlot>();
+            Slots = new List<InventorySlot>();
             Size = size;
             Initialize();
         }
@@ -46,34 +48,84 @@ namespace PixelFactory.Items
         {
             for (ulong i = 0; i < Size; ++i)
             {
-                Slots.Add(new ItemSlot());
+                Slots.Add(new InventorySlot());
             }
         }
-
-        public void AddItem(Item item)
+        public void AddEntity(InventoryEntity entity)
+        {
+            AddEntities(entity);
+        }
+        public void AddEntities(InventoryEntity entity, int count = 1)
         {
             if (IsFull)
             {
                 return;
             }
-            bool added = false;
-            foreach (ItemSlot slot in Slots)
+            if (!CanAccept(entity, count))
             {
-                if (!slot.IsFull && !slot.IsEmpty && slot.FilterItem.Id == item.Id)
+                return;
+            }
+            int neededQuantity = count;
+            foreach (InventorySlot slot in Slots)
+            {
+                if (slot.IsFull)
                 {
-                    slot.AddItem(item);
-                    added = true;
-                    break;
+                    continue;
+                }
+
+                int addCount = entity.MaximumQuantity;
+                if (!slot.IsEmpty)
+                {
+                    addCount = slot.AvailableSpace;
+                }
+                if (addCount > neededQuantity)
+                {
+                    addCount = neededQuantity;
+                }
+                if (slot.AddEntities(entity, addCount))
+                {
+                    neededQuantity -= addCount;
+                    if (neededQuantity == 0)
+                    {
+                        changed= true;
+                        Ballance();
+                        return;
+                    }
                 }
             }
-            if (!added)
+        }
+        public void Ballance()
+        {
+            if(!AutoSort)
             {
-                foreach (ItemSlot slot in Slots)
+                return;
+            }
+            Sort();
+            for (int i = 0; i < Slots.Count; ++i)
+            {
+                InventorySlot currentSlot = Slots[i];
+                if (!currentSlot.IsFull)
                 {
-                    if (slot.IsEmpty)
+                    for (int j = i + 1; j < Slots.Count; ++j)
                     {
-                        slot.AddItem(item);
-                        break;
+                        InventorySlot slot = Slots[j];
+                        if (slot.HasSameEntity(currentSlot))
+                        {
+                            int neededCount = currentSlot.Capacity - currentSlot.Count;
+                            if (neededCount > 0)
+                            {
+                                if (slot.Count >= neededCount)
+                                {
+                                    slot.RemoveEntites(neededCount);
+                                    currentSlot.AddEntities(neededCount);
+                                }
+                                else
+                                {
+                                    currentSlot.AddEntities(slot.Count);
+                                    slot.RemoveAll();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -81,89 +133,91 @@ namespace PixelFactory.Items
         }
         public void Sort()
         {
-            Slots = Slots.OrderByDescending(slot => slot.FilterItem?.Id)
+            Slots = Slots.OrderByDescending(slot => slot.Entity?.Id)
                     .ThenByDescending(slot => slot.Count).ToList();
         }
-        public void AddItems(Item item, int quantity)
+        public void RemoveEntities(InventoryEntity entity, int count = 1)
         {
-            if (IsFull)
+            if(!HasEntities(entity, count))
+            { 
                 return;
-            for (int i = 0; i < quantity; ++i)
-            {
-                AddItem(item);
             }
-        }
-        public void RemoveItem(Item item)
-        {
-            foreach (ItemSlot slot in Slots)
+            int neededCount = count;
+            foreach (InventorySlot slot in Slots)
             {
-                if (!slot.IsEmpty && slot.FilterItem.Id == item.Id)
+                int currentCount = neededCount;
+                if(currentCount > slot.Count)
                 {
-                    slot.RemoveItem();
-                    return;
+                    currentCount = slot.Count;
                 }
-            }
-            Sort();
-        }
-        public void RemoveItem(Item item, int quantity)
-        {
-            int toRemove = quantity;
-            for (int i = Slots.Count - 1; i >= 0; --i)
-            {
-                ItemSlot slot = Slots[i];
-                if (!slot.IsEmpty && slot.FilterItem.Id == item.Id)
+                if (slot.RemoveEntities(entity, currentCount))
                 {
-                    if (slot.Count < toRemove)
+                    neededCount -= currentCount;
+                    if(neededCount == 0)
                     {
-                        toRemove -= slot.Count;
-                        slot.RemoveItems(slot.Count);
-                    }
-                    else
-                    {
-                        slot.RemoveItems(toRemove);
-                        toRemove -= toRemove;
-                    }
-                    if (toRemove == 0)
+                        Ballance();
+                        changed = true;
                         return;
+                    }
                 }
+
             }
-            Sort();
         }
-        public bool HasItems(Item item, int quantity)
+        public void RemoveEntity(InventoryEntity entity)
+        {
+            RemoveEntities(entity);
+        }
+        public bool HasEntities(InventoryEntity entity, int quantity)
         {
             int inventoryQuantity = 0;
-            foreach (ItemSlot slot in Slots)
+            foreach (InventorySlot slot in Slots)
             {
-                if (!slot.IsEmpty && slot.FilterItem.Id == item.Id)
+                if (slot.HasSameEntity(entity))
+                {
+                    if (slot.HasEntities(entity, quantity))
+                    {
+                        return true;
+                    }
                     inventoryQuantity += slot.Count;
+                    if (inventoryQuantity > quantity)
+                    {
+                        return true;
+                    }
+                }
             }
             return inventoryQuantity >= quantity;
 
         }
-        public bool HasEmptySlots(int count)
+        public bool HasEmptySlots(int count = 1)
         {
             int result = 0;
-            foreach (ItemSlot slot in Slots)
+            foreach (InventorySlot slot in Slots)
             {
                 if (slot.IsEmpty)
                     result += 1;
             }
             return result >= count;
         }
-        public bool CanAccept(Item item, int quantity = 1)
+        public bool CanAccept(InventoryEntity entity, int quantity = 1)
         {
             int acceptQuantity = 0;
-            foreach (ItemSlot slot in Slots)
+            foreach (InventorySlot slot in Slots)
             {
-                if (!slot.IsEmpty && !slot.IsFull && slot.FilterItem.Id != item.Id)
-                    acceptQuantity += (slot.FilterItem.StackSize - slot.Count);
-            }
-            if (acceptQuantity >= quantity)
-            {
-                return true;
+                if (slot.HasSameEntity(entity))
+                {
+                    if (slot.CanAccept(entity, quantity))
+                    {
+                        return true;
+                    }
+                    acceptQuantity += slot.AvailableSpace;
+                    if (acceptQuantity >= quantity)
+                    {
+                        return true;
+                    }
+                }
             }
             double neededQuantity = quantity - acceptQuantity;
-            int neededSlots = (int)Math.Ceiling(neededQuantity / item.StackSize);
+            int neededSlots = (int)Math.Ceiling(neededQuantity / entity.MaximumQuantity);
             if (HasEmptySlots(neededSlots))
             {
                 return true;
@@ -173,11 +227,15 @@ namespace PixelFactory.Items
 
         public override void Update(GameTime gameTime)
         {
-            foreach (ItemSlot slot in Slots)
+            foreach (InventorySlot slot in Slots)
             {
                 slot.Update(gameTime);
             }
-            Sort();
+            if (changed)
+            {
+                changed = false;
+                Ballance();
+            }
             base.Update(gameTime);
         }
     }

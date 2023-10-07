@@ -102,7 +102,7 @@ namespace PixelFactory
             belt.Id = "debugBelt";
             belt.Texture = contentManager.GetTexture(belt.Id);
             belt.ProcessingTime = 1000f;
-            belt.AddItemToInput(new Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+            belt.AddItemToInput(new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
 
             Animation animation = new Animation(belt.Texture, new Vector2(Map.TileSize, Map.TileSize), 250, true);
             animationManager.AddAnimation(animation);
@@ -111,9 +111,9 @@ namespace PixelFactory
             entityManager.Add(belt);
 
             entityManager.Add(player);
-            Item debugItem1 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
-            Item debugItem2 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
-            Item debugItem3 = new Item(_spriteBatch, Vector2.One) { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem1 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem2 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem3 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
             Recipe recipe = new Recipe();
             recipe.Id = "recipe_debugItem_3";
             recipe.Duration = 15000;
@@ -138,7 +138,7 @@ namespace PixelFactory
                 if (i == 4)
                 {
                     dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
-                    dynBelt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
+                    dynBelt.AddItemToInput(new Items.InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
                 }
                 entityManager.Add(dynBelt);
             }
@@ -271,7 +271,7 @@ namespace PixelFactory
 
                     if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new Items.Item(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+                        belt.AddItemToInput(new Items.InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
@@ -289,7 +289,7 @@ namespace PixelFactory
                 text = "<Empty Slot>";
                 if (!slot.IsEmpty)
                 {
-                    text = $"#{slot.FilterItem.Id} [{slot.Count}]";
+                    text = $"#{slot.Entity.Id} [{slot.Count}]";
                 }
                 inventoryControl.AddControl(new Label(new Vector2(x, y), text, debugFont));
                 y += 30;

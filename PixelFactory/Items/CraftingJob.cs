@@ -11,24 +11,24 @@ namespace PixelFactory.Items
     public class CraftingJob : Entity
     {
         public Recipe Recipe { get; private set; }
-        public Queue<ItemSlot> Outputs { get; private set; }
+        public Queue<InventorySlot> Outputs { get; private set; }
         public bool HasOutputItems { get => Outputs.Count > 0; }
         public bool Finished { get; private set; }
         public double Progress { get; private set; } = 0;
         public CraftingJob() 
         { 
             Finished = false;
-            Outputs = new Queue<ItemSlot>();
+            Outputs = new Queue<InventorySlot>();
             Progress = 0;
         }
         public CraftingJob(Recipe recipe)
         {
             Recipe = recipe;
             Finished = false;
-            Outputs = new Queue<ItemSlot>();
+            Outputs = new Queue<InventorySlot>();
             Progress = 0;
         }
-        public ItemSlot GetOutput()
+        public InventorySlot GetOutput()
         {
             return Outputs.Dequeue();
         }
@@ -44,7 +44,7 @@ namespace PixelFactory.Items
             {
                 foreach (RecipeItem item in Recipe.Outputs)
                 {
-                    Outputs.Enqueue(new ItemSlot(item.Item, item.Quantity));
+                    Outputs.Enqueue(new InventorySlot(item.Item, item.Quantity));
                 }
                 Finished = true;
             }

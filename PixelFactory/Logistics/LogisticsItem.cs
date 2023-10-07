@@ -7,7 +7,7 @@ namespace PixelFactory.Logistics
 {
     public class LogisticsItem : DrawableEntity
     {
-        public Item Item { get; set; } = null;
+        public InventoryEntity Item { get; set; } = null;
         public double Progress { get; set; } = 0;
         public bool Ready { get => Progress.Equals(1); }
         public Direction SourceDirection { get; set; }
@@ -28,7 +28,7 @@ namespace PixelFactory.Logistics
         {
             Layer = DrawLayer.Items;
         }
-        public LogisticsItem(Item item, SpriteBatch spriteBatch)
+        public LogisticsItem(InventoryEntity item, SpriteBatch spriteBatch)
             : base(spriteBatch, Vector2.One)
         {
             Layer = DrawLayer.Items;

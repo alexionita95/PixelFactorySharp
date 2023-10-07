@@ -15,24 +15,24 @@ namespace PixelFactory.Items
         public bool HasActiveJobs { get=>ActiveJobs.Count > 0; }
         public int ParallelJobs { get; private set; } = 1;
         public List<CraftingJob> ActiveJobs { get; private set; }
-        public Queue<ItemSlot> Outputs { get; private set; }
+        public Queue<InventorySlot> Outputs { get; private set; }
         public Queue<CraftingJob> PendingJobs { get; private set; }
         public Crafter()
         {
             ActiveJobs = new List<CraftingJob>();
-            Outputs = new Queue<ItemSlot>();
+            Outputs = new Queue<InventorySlot>();
             PendingJobs = new Queue<CraftingJob>();
         }
         public Crafter(int parallelJobs)
         {
-            Outputs = new Queue<ItemSlot>();
+            Outputs = new Queue<InventorySlot>();
             PendingJobs = new Queue<CraftingJob>();
             ActiveJobs = new List<CraftingJob>();
             ParallelJobs = parallelJobs;
         }
         public Crafter(Recipe recipe, int count = 1, int parallelJobs = 1)
         {
-            Outputs = new Queue<ItemSlot>();
+            Outputs = new Queue<InventorySlot>();
             PendingJobs = new Queue<CraftingJob>();
             ActiveJobs= new List<CraftingJob>();
             ParallelJobs = parallelJobs;
@@ -46,7 +46,7 @@ namespace PixelFactory.Items
             }
         }
         
-        public ItemSlot DequeueOutput()
+        public InventorySlot DequeueOutput()
         {
             if (Outputs.Count == 0)
                 return null;
@@ -56,13 +56,13 @@ namespace PixelFactory.Items
         {
             DequeueOutput();
         }
-        public ItemSlot GetFirstOutput()
+        public InventorySlot GetFirstOutput()
         {
             return Outputs.Peek();
         }
-        public List<ItemSlot> GetOutputs()
+        public List<InventorySlot> GetOutputs()
         {
-            List<ItemSlot > outputs = new List<ItemSlot>();
+            List<InventorySlot > outputs = new List<InventorySlot>();
             while(HasOutputItems)
             {
                 outputs.Add(DequeueOutput());

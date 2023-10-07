@@ -25,7 +25,7 @@ namespace PixelFactory
         {
             foreach (RecipeItem item in recipe.Inputs)
             {
-                if (!Inventory.HasItems(item.Item, item.Quantity))
+                if (!Inventory.HasEntities(item.Item, item.Quantity))
                 {
                     return false;
                 }
@@ -41,33 +41,30 @@ namespace PixelFactory
                 {
                     foreach (RecipeItem item in recipe.Inputs)
                     {
-                        Inventory.RemoveItem(item.Item, item.Quantity);
+                        Inventory.RemoveEntities(item.Item, item.Quantity);
                     }
                     Crafter.Enqueue(recipe);
                 }
             }
         }
 
-        public void AddItemToInventory(Item item)
+        public void AddItemToInventory(InventoryEntity item)
         {
-            Inventory.AddItem(item);
+            Inventory.AddEntity(item);
         }
-        public void AddItemsToInventory(Item item, int quantity)
+        public void AddItemsToInventory(InventoryEntity item, int quantity)
         {
-            for (int i = 0; i < quantity; i++)
-            {
-                Inventory.AddItem(item);
-            }
+            Inventory.AddEntities(item, quantity);
         }
 
         public void DisplayDebugInventory()
         {
             Debug.WriteLine("##########Inventory##########");
-            foreach (ItemSlot slot in Inventory.Slots)
+            foreach (InventorySlot slot in Inventory.Slots)
             {
                 if (!slot.IsEmpty)
                 {
-                    Debug.WriteLine($"#{slot.FilterItem.Id} Quantity: {slot.Count}");
+                    Debug.WriteLine($"#{slot.Entity.Id} Quantity: {slot.Count}");
                 }
                 else
                 {
@@ -85,10 +82,10 @@ namespace PixelFactory
             {
                 while (Crafter.HasOutputItems && !Inventory.IsFull)
                 {
-                    ItemSlot output = Crafter.GetFirstOutput();
-                    if (!Inventory.IsFull && Inventory.CanAccept(output.FilterItem, output.Count))
+                    InventorySlot output = Crafter.GetFirstOutput();
+                    if (!Inventory.IsFull && Inventory.CanAccept(output.Entity, output.Count))
                     {
-                        Inventory.AddItems(output.FilterItem, output.Count);
+                        Inventory.AddEntities(output.Entity, output.Count);
                         Crafter.RemoveFirstOutput();
                     }
                     else

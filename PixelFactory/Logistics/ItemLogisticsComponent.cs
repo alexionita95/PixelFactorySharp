@@ -139,7 +139,7 @@ namespace PixelFactory.Logistics
             }
             return null;
         }
-        public void AddItemToInput(Item item, Direction direction, Vector2 position)
+        public void AddItemToInput(InventoryEntity item, Direction direction, Vector2 position)
         {
 
             var portDir = DirectionUtils.GetRotatedDirection(direction, Rotation, true);
@@ -162,7 +162,7 @@ namespace PixelFactory.Logistics
                 port.Items.Add(logisticsComponentItem);
             }
         }
-        public void AddItemToOutput(Item item, Direction direction, Vector2 position)
+        public void AddItemToOutput(InventoryEntity item, Direction direction, Vector2 position)
         {
             uint portPosition = DirectionUtils.CalculatePortPosition(direction, position, Position, rotatedSize);
             var port = GetOutput(direction, portPosition);
