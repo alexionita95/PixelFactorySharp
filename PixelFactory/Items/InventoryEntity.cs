@@ -12,7 +12,7 @@ namespace PixelFactory.Items
     {
         public string Name { get; set; }
         public int MaximumQuantity { get; set; } = 10;
-        public InventoryEntity(SpriteBatch spriteBatch, Vector2 size) : base(spriteBatch, size)
+        public InventoryEntity() : base(Vector2.One)
         {
         }
         public InventoryEntity(InventoryEntity item): base(item)
@@ -20,9 +20,9 @@ namespace PixelFactory.Items
             Name = item.Name;
             MaximumQuantity = item.MaximumQuantity;
         }
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
         public bool HasSameId(InventoryEntity item)
         {

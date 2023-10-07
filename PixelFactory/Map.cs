@@ -10,15 +10,14 @@ namespace PixelFactory
     {
         public string Type { get; set; }
         public MapTile(SpriteBatch spriteBatch, string type)
-            :base(spriteBatch, Vector2.One)
+            :base(Vector2.One)
         {
-            this.spriteBatch = spriteBatch;
             Type = type;
             Layer = DrawLayer.Map;
         }
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
     }
     public class MapChunk
@@ -29,23 +28,22 @@ namespace PixelFactory
         public Vector2 Position { get; set; }
         public Vector2 Offset { get; set; } = Vector2.Zero;
         public int Size { get; set; } = 32;
-        public MapChunk(SpriteBatch spriteBatch)
+        public MapChunk()
         {
             tiles = new List<MapTile>();
-            this.spriteBatch = spriteBatch;
         }
         public void AddTile(MapTile tile)
         {
             tiles.Add(tile);
         }
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             foreach (MapTile tile in tiles)
             {
                 if (Camera.IsInviewport(tile.Position, tile.Size))
                 {
                     tile.Zoom = Camera.Zoom;
-                    tile.Draw(gameTime);
+                    tile.Draw(gameTime, spriteBatch);
                 }
             }
         }
@@ -84,7 +82,7 @@ namespace PixelFactory
 
         public MapChunk GenerateChunk(int chunkX, int chunkY)
         {
-            MapChunk chunk = new MapChunk(spriteBatch);
+            MapChunk chunk = new MapChunk();
             for (int tileY = 0; tileY < ChunkSize; ++tileY)
             {
                 for(int tileX = 0; tileX < ChunkSize;++tileX)
@@ -107,12 +105,12 @@ namespace PixelFactory
                 }
             }
         }
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             foreach (MapChunk chunk in chunks)
             {
                 chunk.Camera = Camera;
-                chunk.Draw(gameTime);
+                chunk.Draw(gameTime, spriteBatch);
             }
         }
 

@@ -16,8 +16,16 @@ namespace PixelFactory.Logistics
         public float ProcessingTime { get; set; }
         public int CurrentOutputIndex { get; set; } = 0;
         public Vector2 ItemScale { get; set; }
-        public ItemLogisticsComponent(SpriteBatch spriteBatch, Vector2 size)
-       : base(spriteBatch, size)
+        public ItemLogisticsComponent(Vector2 size)
+       : base(size)
+        {
+            Inputs = new List<ItemLogisticsComponentPort>();
+            Outputs = new List<ItemLogisticsComponentPort>();
+            Layer = DrawLayer.Buildings;
+            ItemScale = new Vector2(.25f, .25f);
+        }
+        public ItemLogisticsComponent()
+         : base(Vector2.One)
         {
             Inputs = new List<ItemLogisticsComponentPort>();
             Outputs = new List<ItemLogisticsComponentPort>();
@@ -51,7 +59,7 @@ namespace PixelFactory.Logistics
         {
             var startPort = GetInput(item.SourceDirection, item.SourcePosition);
             var endPort = GetOutput(item.DestinationDirection, item.DestinationPosition);
-            Vector2 startPos = DirectionUtils.GetInsideEdgePosition(startPort.Direction,startPort.Position, Rotation,rotatedSize, item.Scale);
+            Vector2 startPos = DirectionUtils.GetInsideEdgePosition(startPort.Direction, startPort.Position, Rotation, rotatedSize, item.Scale);
             Vector2 endPos = DirectionUtils.GetInsideEdgePosition(endPort.Direction, endPort.Position, Rotation, rotatedSize, item.Scale);
             bool straight = HelperFunctions.IsStraightLine(startPos, endPos);
             PathInterpolator interpolator = new PathInterpolator();
@@ -63,7 +71,7 @@ namespace PixelFactory.Logistics
             }
             else
             {
-                Vector2 midPoint = HelperFunctions.GetMidPoint(startPos, endPos, rotatedSize, ItemScale/2);
+                Vector2 midPoint = HelperFunctions.GetMidPoint(startPos, endPos, rotatedSize, ItemScale / 2);
                 interpolator.AddPoint(midPoint);
                 interpolator.AddPoint(endPos);
                 return interpolator.Interpolate(item.Progress);
@@ -151,7 +159,7 @@ namespace PixelFactory.Logistics
                 {
                     return;
                 }
-                LogisticsItem logisticsComponentItem = new LogisticsItem(item, spriteBatch);
+                LogisticsItem logisticsComponentItem = new LogisticsItem(item);
                 logisticsComponentItem.SourcePosition = port.Position;
                 logisticsComponentItem.SourceDirection = port.Direction;
                 var currentOutputPort = Outputs[CurrentOutputIndex];
@@ -173,7 +181,7 @@ namespace PixelFactory.Logistics
                 {
                     return;
                 }
-                LogisticsItem logisticsComponentItem = new LogisticsItem(item, spriteBatch);
+                LogisticsItem logisticsComponentItem = new LogisticsItem(item);
                 port.Items.Add(logisticsComponentItem);
             }
         }
@@ -201,7 +209,7 @@ namespace PixelFactory.Logistics
                 var rotatedPosition = DirectionUtils.GetRotatedPosition(output.Direction, output.Position, Rotation, rotatedSize);
                 if (rotatedDirection == direction && rotatedPosition == portPosition)
                 {
-                        return true;
+                    return true;
                 }
             }
             return false;
@@ -226,7 +234,7 @@ namespace PixelFactory.Logistics
                 {
                     foreach (var it in port.Items)
                     {
-                        if(filter == null)
+                        if (filter == null)
                         {
                             lastDist = CheckDistance(lastDist, position, GetItemPosition(it));
                         }
@@ -294,7 +302,7 @@ namespace PixelFactory.Logistics
                 {
                     Vector2 pos = DirectionUtils.GetNextPosition(input.Direction, input.Position, Rotation, Position, rotatedSize);
                     Entity entity = EntityManager.GetFromPosition(pos);
-                    if(entity == null)
+                    if (entity == null)
                     {
                         return false;
                     }
@@ -401,9 +409,9 @@ namespace PixelFactory.Logistics
                 }
             }
         }
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }

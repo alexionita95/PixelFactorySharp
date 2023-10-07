@@ -93,16 +93,16 @@ namespace PixelFactory
             map = new Map(_spriteBatch, contentManager.TileTextures);
             map.Camera = camera;
             map.Generate();
-            building = new Building(_spriteBatch, new Vector2(2, 2));
+            building = new Building(new Vector2(2, 2));
             building.Position = new Vector2(10, 2) + map.MapOffset;
             building.Id = "debugBuilding2x2";
             building.Texture = contentManager.GetTexture(building.Id);
-            belt = new Belt(_spriteBatch);
+            belt = new Belt();
             belt.Position = new Vector2(10, 4) + map.MapOffset;
             belt.Id = "debugBelt";
             belt.Texture = contentManager.GetTexture(belt.Id);
             belt.ProcessingTime = 1000f;
-            belt.AddItemToInput(new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+            belt.AddItemToInput(new InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
 
             Animation animation = new Animation(belt.Texture, new Vector2(Map.TileSize, Map.TileSize), 250, true);
             animationManager.AddAnimation(animation);
@@ -111,9 +111,9 @@ namespace PixelFactory
             entityManager.Add(belt);
 
             entityManager.Add(player);
-            InventoryEntity debugItem1 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
-            InventoryEntity debugItem2 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
-            InventoryEntity debugItem3 = new InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem1 = new InventoryEntity() { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem2 = new InventoryEntity() { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
+            InventoryEntity debugItem3 = new InventoryEntity() { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
             Recipe recipe = new Recipe();
             recipe.Id = "recipe_debugItem_3";
             recipe.Duration = 15000;
@@ -129,7 +129,7 @@ namespace PixelFactory
             int i = 1;
             for (i = 1; i < 5; ++i)
             {
-                Belt dynBelt = new Belt(_spriteBatch);
+                Belt dynBelt = new Belt();
                 dynBelt.Position = new Vector2(lastPos.X, lastPos.Y + i);
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
@@ -138,14 +138,14 @@ namespace PixelFactory
                 if (i == 4)
                 {
                     dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
-                    dynBelt.AddItemToInput(new Items.InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
+                    dynBelt.AddItemToInput(new Items.InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
                 }
                 entityManager.Add(dynBelt);
             }
             lastPos = new Vector2(lastPos.X, lastPos.Y + i - 1);
             for (i = 1; i < 4; ++i)
             {
-                Belt dynBelt = new Belt(_spriteBatch);
+                Belt dynBelt = new Belt();
                 dynBelt.Position = new Vector2(lastPos.X - i, lastPos.Y);
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
@@ -157,7 +157,7 @@ namespace PixelFactory
             lastPos = new Vector2(lastPos.X - i, lastPos.Y + 1);
             for (i = 1; i < 5; ++i)
             {
-                Belt dynBelt = new Belt(_spriteBatch);
+                Belt dynBelt = new Belt();
                 dynBelt.Position = new Vector2(lastPos.X, lastPos.Y - i);
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
@@ -170,7 +170,7 @@ namespace PixelFactory
             lastPos = new Vector2(lastPos.X - 1, lastPos.Y - i);
             for (i = 1; i < 5; ++i)
             {
-                Belt dynBelt = new Belt(_spriteBatch);
+                Belt dynBelt = new Belt();
                 dynBelt.Position = new Vector2(lastPos.X + i, lastPos.Y);
                 dynBelt.Id = belt.Id;
                 dynBelt.ProcessingTime = belt.ProcessingTime;
@@ -248,7 +248,7 @@ namespace PixelFactory
                         Entity entity = entityManager.GetFromPosition(pos);
                         if (entity == null)
                         {
-                            Belt dynBelt = new Belt(_spriteBatch);
+                            Belt dynBelt = new Belt();
                             dynBelt.Position = pos;
                             dynBelt.Id = belt.Id;
                             dynBelt.ProcessingTime = belt.ProcessingTime;
@@ -271,7 +271,7 @@ namespace PixelFactory
 
                     if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new Items.InventoryEntity(_spriteBatch, Vector2.One) { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+                        belt.AddItemToInput(new InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
@@ -342,8 +342,8 @@ namespace PixelFactory
             GraphicsDevice.Clear(Color.Black);
             // TODO: Add your drawing code here
              _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, transformMatrix: camera.TransformMatrix);
-             map.Draw(gameTime);
-             entityManager.Draw(gameTime);
+             map.Draw(gameTime, _spriteBatch    );
+             entityManager.Draw(gameTime, _spriteBatch);
              Point worldPos = camera.ScreenToWorld(currentMousePos.ToVector2()).ToPoint();
              Vector2 mousePos = Map.ScreenToMap(worldPos.X, worldPos.Y, camera.Zoom);
              //DrawChunk(ScreenToMap(_graphics.PreferredBackBufferWidth/2,_graphics.PreferredBackBufferHeight/2));

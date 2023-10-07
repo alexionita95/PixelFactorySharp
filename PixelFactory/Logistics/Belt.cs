@@ -9,7 +9,7 @@ namespace PixelFactory.Logistics
         public int ItemLimit { get; set; } = 10;
         public bool corner = false;
 
-        public Belt(SpriteBatch spriteBatch) : base(spriteBatch, Vector2.One)
+        public Belt() : base(Vector2.One)
         {
             AddInput(Direction.N, 0);
             AddInput(Direction.E, 0);
@@ -23,7 +23,7 @@ namespace PixelFactory.Logistics
             {
                 corner = false;
             }
-            if (validInputs == 1) 
+            if (validInputs == 1)
             {
                 if (ValidateInput(Direction.E) && ValidateOutput(Direction.S))
                 {
@@ -36,7 +36,7 @@ namespace PixelFactory.Logistics
             }
             base.Update(gameTime);
         }
-        private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports, GameTime gameTime)
+        private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports, GameTime gameTime, SpriteBatch spriteBatch)
         {
             foreach (var port in ports)
             {
@@ -44,23 +44,23 @@ namespace PixelFactory.Logistics
                 {
                     foreach (var item in port.Items)
                     {
-                        DrawItemOnBelt(item, gameTime);
+                        DrawItemOnBelt(item, gameTime, spriteBatch);
                     }
                 }
             }
         }
-        private void DrawItemOnBelt(LogisticsItem item, GameTime gameTime)
+        private void DrawItemOnBelt(LogisticsItem item, GameTime gameTime, SpriteBatch spriteBatch)
         {
             var pos = Map.MapToScreen(Position.X, Position.Y);
             item.Zoom = Zoom;
             var itemPos = GetItemPosition(item);
             itemPos = new Vector2(itemPos.X * Map.TileSize, itemPos.Y * Map.TileSize) + pos;
             item.LogisticPosition = itemPos;
-            item.Draw(gameTime);
+            item.Draw(gameTime, spriteBatch);
         }
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if(corner)
+            if (corner)
             {
                 Animation.CurrentRow = 1;
             }
@@ -68,9 +68,9 @@ namespace PixelFactory.Logistics
             {
                 Animation.CurrentRow = 0;
             }
-            base.Draw(gameTime);
-            DrawPortsOnBelt(Outputs, gameTime);
-            DrawPortsOnBelt(Inputs, gameTime);
+            base.Draw(gameTime, spriteBatch);
+            DrawPortsOnBelt(Outputs, gameTime, spriteBatch);
+            DrawPortsOnBelt(Inputs, gameTime, spriteBatch);
         }
     }
 }

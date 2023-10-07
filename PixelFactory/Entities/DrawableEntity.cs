@@ -37,11 +37,9 @@ namespace PixelFactory.Entities
         private Vector2 position;
         private EntityRotation rotation;
 
-        protected SpriteBatch spriteBatch;
 
-        public DrawableEntity(SpriteBatch spriteBatch, Vector2 size)
+        public DrawableEntity(Vector2 size)
         {
-            this.spriteBatch = spriteBatch;
             Size = size;
             rotatedSize = size;
 
@@ -58,7 +56,6 @@ namespace PixelFactory.Entities
             Layer= entity.Layer;
             rotatedSize = new Vector2(entity.rotatedSize.X, entity.rotatedSize.Y);
             drawPosititon = new Vector2(entity.drawPosititon.X, entity.drawPosititon.Y);
-            spriteBatch = entity.spriteBatch;
         }
 
         public float GetDrawLayer()
@@ -108,7 +105,7 @@ namespace PixelFactory.Entities
                     break;
             }
         }
-        public virtual void Draw(GameTime gameTime)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             float layer = GetDrawLayer();
             float rotation = GetRotationAngle();

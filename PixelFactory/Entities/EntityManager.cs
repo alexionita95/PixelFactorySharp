@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace PixelFactory.Entities
                 entity.Update(gameTime);
             }
         }
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             foreach (var entity in entities)
             {
@@ -60,7 +61,7 @@ namespace PixelFactory.Entities
                     if (Camera.IsInviewport(drawable.Position, drawable.Size))
                     {
                         drawable.Zoom = Camera.Zoom;
-                        drawable.Draw(gameTime);
+                        drawable.Draw(gameTime, spriteBatch);
                     }
                 }
             }

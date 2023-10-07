@@ -19,14 +19,14 @@ namespace PixelFactory.Buildings
 
         public float ProcessingTime { get; set; }
 
-        public Building(SpriteBatch spriteBatch, Vector2 size)
-            : base(spriteBatch, size)
+        public Building(Vector2 size)
+            : base(size)
         {
             Inventory = new List<InventorySlot>();
             Layer = DrawLayer.Buildings;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Vector2 pixelSize = Map.MapToScreen(rotatedSize.X, rotatedSize.Y);
 
@@ -52,7 +52,7 @@ namespace PixelFactory.Buildings
                     break;
             }
             drawPosititon = newPos;
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
         public void AddInventorySlot(InventorySlot slot)
         {

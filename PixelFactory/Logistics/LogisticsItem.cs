@@ -23,23 +23,23 @@ namespace PixelFactory.Logistics
                 Progress = 1;
             }
         }
-        public LogisticsItem(SpriteBatch spriteBatch)
-            : base(spriteBatch, Vector2.One)
+        public LogisticsItem()
+            : base(Vector2.One)
         {
             Layer = DrawLayer.Items;
         }
-        public LogisticsItem(InventoryEntity item, SpriteBatch spriteBatch)
-            : base(spriteBatch, Vector2.One)
+        public LogisticsItem(InventoryEntity item)
+            : base(Vector2.One)
         {
             Layer = DrawLayer.Items;
             Item = item;
             Progress = 0;
         }
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Texture = Item.Texture;
             drawPosititon = LogisticPosition;
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }
