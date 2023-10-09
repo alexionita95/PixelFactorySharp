@@ -1,11 +1,12 @@
 ﻿using PixelFactory.Entities;
+using PixelFactory.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Crafting
 {
     public class RecipeItem
     {
@@ -16,7 +17,7 @@ namespace PixelFactory.Items
         {
 
         }
-        public RecipeItem(InventoryEntity item,int quantity)
+        public RecipeItem(InventoryEntity item, int quantity)
         {
             Item = item;
             Quantity = quantity;
@@ -24,15 +25,15 @@ namespace PixelFactory.Items
     }
     public class Recipe : Entity
     {
-        public List<RecipeItem> Inputs { get; set;}
-        public List<RecipeItem> Outputs { get; set;}
+        public List<RecipeItem> Inputs { get; set; }
+        public List<RecipeItem> Outputs { get; set; }
         public double Duration { get; set; }
-        public Recipe() 
+        public Recipe()
         {
             Inputs = new List<RecipeItem>();
             Outputs = new List<RecipeItem>();
         }
-        public void AddInput(RecipeItem input) 
+        public void AddInput(RecipeItem input)
         {
             Inputs.Add(input);
         }

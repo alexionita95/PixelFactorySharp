@@ -88,7 +88,8 @@ namespace PixelFactory
                 for(int tileX = 0; tileX < ChunkSize;++tileX)
                 {
                     MapTile tile = new MapTile(spriteBatch,"debug");
-                    tile.Texture = TileTextures[tile.Type];
+            
+                    tile.Texture = new Graphics.Texture(TileTextures[tile.Type]);
                     tile.Position = new Vector2(chunkX*ChunkSize + tileX + MapOffset.X, chunkY*ChunkSize + tileY + MapOffset.Y);
                     chunk.AddTile(tile);
                 }

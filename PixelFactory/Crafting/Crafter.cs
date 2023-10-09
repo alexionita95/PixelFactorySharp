@@ -1,18 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using PixelFactory.Entities;
+using PixelFactory.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Crafting
 {
     public class Crafter : Entity
     {
         public bool HasOutputItems { get => Outputs.Count > 0; }
         public bool HasPendingJobs { get => PendingJobs.Count > 0; }
-        public bool HasActiveJobs { get=>ActiveJobs.Count > 0; }
+        public bool HasActiveJobs { get => ActiveJobs.Count > 0; }
         public int ParallelJobs { get; private set; } = 1;
         public List<CraftingJob> ActiveJobs { get; private set; }
         public Queue<InventorySlot> Outputs { get; private set; }
@@ -34,18 +35,18 @@ namespace PixelFactory.Items
         {
             Outputs = new Queue<InventorySlot>();
             PendingJobs = new Queue<CraftingJob>();
-            ActiveJobs= new List<CraftingJob>();
+            ActiveJobs = new List<CraftingJob>();
             ParallelJobs = parallelJobs;
             Enqueue(recipe, count);
         }
         public void Enqueue(Recipe recipe, int count = 1)
         {
-            for(int i = 0; i < count; ++i) 
+            for (int i = 0; i < count; ++i)
             {
                 PendingJobs.Enqueue(new CraftingJob(recipe));
             }
         }
-        
+
         public InventorySlot DequeueOutput()
         {
             if (Outputs.Count == 0)
@@ -62,8 +63,8 @@ namespace PixelFactory.Items
         }
         public List<InventorySlot> GetOutputs()
         {
-            List<InventorySlot > outputs = new List<InventorySlot>();
-            while(HasOutputItems)
+            List<InventorySlot> outputs = new List<InventorySlot>();
+            while (HasOutputItems)
             {
                 outputs.Add(DequeueOutput());
             }
@@ -77,25 +78,25 @@ namespace PixelFactory.Items
                 return;
 
             List<CraftingJob> toRemove = new List<CraftingJob>();
-            foreach(var activeJob in ActiveJobs) 
+            foreach (var activeJob in ActiveJobs)
             {
                 activeJob.Update(gameTime);
-                if(activeJob.Finished)
+                if (activeJob.Finished)
                 {
                     toRemove.Add(activeJob);
                 }
             }
-            foreach(var job in toRemove)
+            foreach (var job in toRemove)
             {
-                while(job.HasOutputItems)
+                while (job.HasOutputItems)
                 {
                     Outputs.Enqueue(job.GetOutput());
                 }
                 ActiveJobs.Remove(job);
             }
-            if(HasPendingJobs && CanAcceptActiveJobs)
+            if (HasPendingJobs && CanAcceptActiveJobs)
             {
-                for(int i =0; i< ParallelJobs - ActiveJobs.Count; ++i) 
+                for (int i = 0; i < ParallelJobs - ActiveJobs.Count; ++i)
                 {
                     ActiveJobs.Add(PendingJobs.Dequeue());
                 }

@@ -11,6 +11,10 @@ namespace PixelFactory.Entities
         public Entity() 
         {
         }
+        public virtual void Dispose()
+        {
+
+        }
         public Entity(Entity entity)
         {
             Id = entity.Id;

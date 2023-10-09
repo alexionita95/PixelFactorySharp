@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using PixelFactory.Crafting;
 using PixelFactory.Entities;
-using PixelFactory.Items;
+using PixelFactory.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,11 +14,11 @@ namespace PixelFactory
     public class Player : Entity
     {
         public ulong InventorySize { get; set; } = 10;
-        public Inventory Inventory { get; set; }
+        public Inventory.Inventory Inventory { get; set; }
         public Crafter Crafter { get; set; }
         public Player()
         {
-            Inventory = new Inventory(InventorySize);
+            Inventory = new Inventory.Inventory(InventorySize);
             Crafter = new Crafter();
         }
 

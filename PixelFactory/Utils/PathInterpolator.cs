@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using System.Text;
 using System.Threading.Tasks;
-using PixelFactory.Items;
+using PixelFactory.Inventory;
 using System.Net;
 
 namespace PixelFactory.Utils

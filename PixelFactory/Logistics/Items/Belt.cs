@@ -1,31 +1,34 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PixelFactory.Inventory;
 using System.Collections.Generic;
 
-namespace PixelFactory.Logistics
+namespace PixelFactory.Logistics.Items
 {
     public class Belt : ItemLogisticsComponent
     {
         public int ItemLimit { get; set; } = 10;
         public bool corner = false;
 
-        public Belt() : base(Vector2.One)
+        public Belt()
         {
             AddInput(Direction.N, 0);
             AddInput(Direction.E, 0);
             AddInput(Direction.W, 0);
             AddOutput(Direction.S, 0);
+            CurrentOutputIndex = 3;
         }
         public override void Update(GameTime gameTime)
         {
-            int validInputs = GetValidInputsCount();
+            InventoryEntityType type = InventoryEntityType.Solid;
+            int validInputs = GetValidInputsCount(type);
             if (validInputs == 0)
             {
                 corner = false;
             }
             if (validInputs == 1)
             {
-                if (ValidateInput(Direction.E) && ValidateOutput(Direction.S))
+                if (ValidateInput(type, Direction.E) && ValidateOutput(type, Direction.S))
                 {
                     corner = true;
                 }
@@ -36,20 +39,7 @@ namespace PixelFactory.Logistics
             }
             base.Update(gameTime);
         }
-        private void DrawPortsOnBelt(List<ItemLogisticsComponentPort> ports, GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            foreach (var port in ports)
-            {
-                if (port.HasItems)
-                {
-                    foreach (var item in port.Items)
-                    {
-                        DrawItemOnBelt(item, gameTime, spriteBatch);
-                    }
-                }
-            }
-        }
-        private void DrawItemOnBelt(LogisticsItem item, GameTime gameTime, SpriteBatch spriteBatch)
+        private void DrawItemOnBelt(LogisticsEntity item, GameTime gameTime, SpriteBatch spriteBatch)
         {
             var pos = Map.MapToScreen(Position.X, Position.Y);
             item.Zoom = Zoom;
@@ -60,6 +50,7 @@ namespace PixelFactory.Logistics
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            Texture.Rotation= Rotation;
             if (corner)
             {
                 Animation.CurrentRow = 1;
@@ -69,8 +60,13 @@ namespace PixelFactory.Logistics
                 Animation.CurrentRow = 0;
             }
             base.Draw(gameTime, spriteBatch);
-            DrawPortsOnBelt(Outputs, gameTime, spriteBatch);
-            DrawPortsOnBelt(Inputs, gameTime, spriteBatch);
+
+            foreach (var item in Items)
+            {
+                DrawItemOnBelt(item, gameTime, spriteBatch);
+            }
+            //DrawPortsOnBelt(Ports, gameTime, spriteBatch);
+            // DrawPortsOnBelt(Inputs, gameTime, spriteBatch);
         }
     }
 }

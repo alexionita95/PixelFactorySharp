@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using PixelFactory.Entities;
+using PixelFactory.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Crafting
 {
     public class CraftingJob : Entity
     {
@@ -15,8 +16,8 @@ namespace PixelFactory.Items
         public bool HasOutputItems { get => Outputs.Count > 0; }
         public bool Finished { get; private set; }
         public double Progress { get; private set; } = 0;
-        public CraftingJob() 
-        { 
+        public CraftingJob()
+        {
             Finished = false;
             Outputs = new Queue<InventorySlot>();
             Progress = 0;
@@ -34,7 +35,7 @@ namespace PixelFactory.Items
         }
         public override void Update(GameTime gameTime)
         {
-            if(Finished)
+            if (Finished)
             {
                 return;
             }

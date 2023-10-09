@@ -3,13 +3,17 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PixelFactory.Animations;
 using PixelFactory.Buildings;
+using PixelFactory.Crafting;
 using PixelFactory.Entities;
-using PixelFactory.Items;
+using PixelFactory.Inventory;
 using PixelFactory.Logistics;
+using PixelFactory.Logistics.Fluids;
+using PixelFactory.Logistics.Items;
 using PixelFactory.UI;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using System.IO.Pipes;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PixelFactory
@@ -22,6 +26,7 @@ namespace PixelFactory
         private Texture2D gridTexture;
         Building building;
         Belt belt;
+        Pipe pipe;
         Point currentMousePos;
         Map map;
         EntityManager entityManager;
@@ -77,6 +82,7 @@ namespace PixelFactory
             contentManager.AddTileTexture("debug", Content.Load<Texture2D>("debugGrid"));
             contentManager.AddTexture("debugItem", Content.Load<Texture2D>("debugItem"));
             contentManager.AddTexture("debugBelt", Content.Load<Texture2D>("debugBelt"));
+            contentManager.AddTexture("debugPipes", Content.Load<Texture2D>("debugPipes"));
             contentManager.AddTexture("debugBuilding2x2", Content.Load<Texture2D>("debugBuilding2x2"));
             contentManager.AddTexture("debugUIBackground", Content.Load<Texture2D>("debugUIBackground"));
             debugFont = Content.Load<SpriteFont>("debug");
@@ -96,13 +102,13 @@ namespace PixelFactory
             building = new Building(new Vector2(2, 2));
             building.Position = new Vector2(10, 2) + map.MapOffset;
             building.Id = "debugBuilding2x2";
-            building.Texture = contentManager.GetTexture(building.Id);
+            building.Texture = new Graphics.Texture(contentManager.GetTexture(building.Id));
             belt = new Belt();
             belt.Position = new Vector2(10, 4) + map.MapOffset;
             belt.Id = "debugBelt";
-            belt.Texture = contentManager.GetTexture(belt.Id);
+            belt.Texture = new Graphics.Texture(contentManager.GetTexture(belt.Id), new Vector2(64,64));
             belt.ProcessingTime = 1000f;
-            belt.AddItemToInput(new InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+            belt.Add(new InventoryEntity() { Id = "debugItem", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) }, Direction.N, belt.Position);
 
             Animation animation = new Animation(belt.Texture, new Vector2(Map.TileSize, Map.TileSize), 250, true);
             animationManager.AddAnimation(animation);
@@ -111,9 +117,29 @@ namespace PixelFactory
             entityManager.Add(belt);
 
             entityManager.Add(player);
-            InventoryEntity debugItem1 = new InventoryEntity() { Id = "debugItem_1", Texture = contentManager.GetTexture("debugItem") };
-            InventoryEntity debugItem2 = new InventoryEntity() { Id = "debugItem_2", Texture = contentManager.GetTexture("debugItem") };
-            InventoryEntity debugItem3 = new InventoryEntity() { Id = "debugItem_3", Texture = contentManager.GetTexture("debugItem") };
+
+            pipe = new Pipe() { Id = "debugPipe" };
+            pipe.Position = new Vector2(2, 2);
+            pipe.Rotation = DrawableEntity.EntityRotation.Rot180;
+            pipe.Texture = new Graphics.Texture(contentManager.GetTexture("debugPipes"), new Vector2(64,64));
+            entityManager.Add(pipe);
+            Pipe secondPipe = new Pipe() { Id = "debugPipe", Position = new Vector2(1, 2), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture };
+            entityManager.Add(secondPipe);
+            Pipe tPipe = new Pipe() { Id = "debugPipe", Position = new Vector2(3, 2), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture };
+            entityManager.Add(tPipe);
+            Pipe fPipe = new Pipe() { Id = "debugPipe", Position = new Vector2(2, 3), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture };
+            entityManager.Add(fPipe);
+            Pipe xPipe = new Pipe() { Id = "debugPipe", Position = new Vector2(1, 3), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture };
+            entityManager.Add(xPipe);
+            Pipe zPipe = new Pipe() { Id = "debugPipe", Position = new Vector2(3, 3), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture };
+            entityManager.Add(zPipe);
+            entityManager.Add(new Pipe() { Id = "debugPipe", Position = new Vector2(4, 3), Rotation = DrawableEntity.EntityRotation.None, Texture = pipe.Texture });
+            entityManager.Add(new Pipe() { Id = "debugPipe", Position = new Vector2(5, 3), Rotation = DrawableEntity.EntityRotation.Rot90, Texture = pipe.Texture });
+            InventoryEntity debugItem1 = new InventoryEntity() { Id = "debugItem_1", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) };
+            InventoryEntity debugItem2 = new InventoryEntity() { Id = "debugItem_2", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) };
+            InventoryEntity debugItem3 = new InventoryEntity() { Id = "debugItem_3", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) };
+            InventoryEntity debugFluid = new InventoryEntity() { Id = "debugFluid_1", Type= InventoryEntityType.Fluid, Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) };
+            pipe.Add(debugFluid,4, Direction.N, pipe.Position);
             Recipe recipe = new Recipe();
             recipe.Id = "recipe_debugItem_3";
             recipe.Duration = 15000;
@@ -138,7 +164,7 @@ namespace PixelFactory
                 if (i == 4)
                 {
                     dynBelt.Rotation = DrawableEntity.EntityRotation.Rot90;
-                    dynBelt.AddItemToInput(new Items.InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.W, belt.Position);
+                    dynBelt.Add(new Inventory.InventoryEntity() { Id = "debugItem", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) }, Direction.W, belt.Position);
                 }
                 entityManager.Add(dynBelt);
             }
@@ -180,6 +206,7 @@ namespace PixelFactory
                 entityManager.Add(dynBelt);
             }
             // TODO: use this.Content to load your game content here
+            
         }
         DrawableEntity.EntityRotation entityRotation = DrawableEntity.EntityRotation.None;
         void Rotate()
@@ -258,6 +285,16 @@ namespace PixelFactory
                             entityManager.Add(dynBelt);
                         }
                     }
+                    if (Mouse.GetState().RightButton == ButtonState.Pressed)
+                    {
+                        Vector2 pos = mousePos;
+
+                        Entity entity = entityManager.GetFromPosition(pos);
+                        if (entity != null)
+                        {
+                            entityManager.Remove(entity);
+                        }
+                    }
                 }
             }
             if (lastAction == null)
@@ -269,9 +306,11 @@ namespace PixelFactory
                 if (gameTime.TotalGameTime.TotalSeconds - lastAction.TotalGameTime.TotalSeconds > 2)
                 {
 
-                    if (belt.CanAcceptItemsFrom(Direction.N, belt.Position))
+                    if (belt.CanAcceptFrom(InventoryEntityType.Solid, Direction.N, belt.Position))
                     {
-                        belt.AddItemToInput(new InventoryEntity() { Id = "debugItem", Texture = contentManager.GetTexture("debugItem") }, Direction.N, belt.Position);
+            
+                        belt.Add(new InventoryEntity() { Id = "debugItem", Texture = new Graphics.Texture(contentManager.GetTexture("debugItem")) }, Direction.N, belt.Position);
+                        
                     }
                     lastAction = new GameTime(gameTime.TotalGameTime, gameTime.ElapsedGameTime, gameTime.IsRunningSlowly);
                 }
@@ -354,12 +393,17 @@ namespace PixelFactory
              if (entity != null)
              {
                  text = $"{text} Entity: #{entity.Id}";
+                if(entity is FluidLogisticsComponent)
+                {
+                    text = $"{text}  Network Components: {(entity as FluidLogisticsComponent).Network.Components.Count} " +
+                        $"Fluid/Segment: {(entity as FluidLogisticsComponent).Count()}";
+                }
              }
              _spriteBatch.DrawString(debugFont, text, camera.ScreenToWorld(new Vector2(0, 0)), Color.White);
              _spriteBatch.End();
 
             _spriteBatch.Begin();
-            testControl.Draw(gameTime);
+            //testControl.Draw(gameTime);
             _spriteBatch.End();
             base.Draw(gameTime);
 

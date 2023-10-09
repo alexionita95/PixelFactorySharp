@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PixelFactory.Entities;
-using PixelFactory.Items;
+using PixelFactory.Inventory;
 
 namespace PixelFactory.Logistics
 {
-    public class LogisticsItem : DrawableEntity
+    public class LogisticsEntity : DrawableEntity
     {
-        public InventoryEntity Item { get; set; } = null;
+        public InventoryEntity Entity { get; set; } = null;
         public double Progress { get; set; } = 0;
         public bool Ready { get => Progress.Equals(1); }
         public Direction SourceDirection { get; set; }
@@ -15,29 +15,34 @@ namespace PixelFactory.Logistics
         public Direction DestinationDirection { get; set; }
         public uint DestinationPosition { get; set; }
         public Vector2 LogisticPosition { get; set; }
+        public bool ReachedDestination { get; private set; } = false;
         public void Update(double step)
         {
+            if (ReachedDestination)
+                return;
             Progress += step;
             if (Progress > 1)
             {
                 Progress = 1;
+                ReachedDestination = true;
             }
         }
-        public LogisticsItem()
+        public LogisticsEntity()
             : base(Vector2.One)
         {
             Layer = DrawLayer.Items;
         }
-        public LogisticsItem(InventoryEntity item)
+        public LogisticsEntity(InventoryEntity item)
             : base(Vector2.One)
         {
             Layer = DrawLayer.Items;
-            Item = item;
+            Entity = item;
             Progress = 0;
+            ReachedDestination = false;
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Texture = Item.Texture;
+            Texture = Entity.Texture;
             drawPosititon = LogisticPosition;
             base.Draw(gameTime, spriteBatch);
         }

@@ -22,11 +22,13 @@ namespace PixelFactory.Entities
             entities.Add(entity);
             entity.EntityManager = this;
         }
-
-        public bool IsInBounds(Vector2 position, Rectangle bounds)
+        public void Remove(Entity entity) 
         {
-            return position.X >= bounds.Left && position.X < bounds.Right && position.Y >= bounds.Top && position.Y < bounds.Bottom;
+            entity.Dispose();
+            entities.Remove(entity);
         }
+
+
         public Entity GetFromPosition(Vector2 positon)
         {
             foreach (var entity in entities)
@@ -35,7 +37,7 @@ namespace PixelFactory.Entities
                 {
                     var drawable = entity as DrawableEntity;
                     var bounds = new Rectangle(drawable.Position.ToPoint(), drawable.Size.ToPoint());
-                    if (IsInBounds(positon, bounds))
+                    if (Utils.HelperFunctions.IsInBounds(positon, bounds))
                     {
                         return entity;
                     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Transactions;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Inventory
 {
     public class InventorySlot : Entity
     {
@@ -13,11 +13,11 @@ namespace PixelFactory.Items
         //public List<Item> Items { get; set; }
         public InventoryEntity Entity { get; set; }
         public InventoryEntity FilterEntity { get; set; }
-        public int Count { get; private set; }
+        public float Count { get; private set; }
         public bool Filtered { get; set; } = false;
         public bool IsEmpty { get => Count == 0; }
-        public int Capacity { get; private set; }
-        public int AvailableSpace { get =>  Capacity - Count; }
+        public float Capacity { get; private set; }
+        public float AvailableSpace { get =>  Capacity - Count; }
         public bool IsFull
         {
             get
@@ -83,7 +83,7 @@ namespace PixelFactory.Items
             AddEntities(item);
             return true;
         }
-        public bool CanAccept(InventoryEntity entity, int count = 1)
+        public bool CanAccept(InventoryEntity entity, float count = 1)
         {
             if (IsFull)
             {
@@ -119,7 +119,7 @@ namespace PixelFactory.Items
             }
             return false;
         }
-        public bool AddEntities(InventoryEntity entity, int count = 1)
+        public bool AddEntities(InventoryEntity entity, float count = 1)
         {
             if (!CanAccept(entity, count))
             {
@@ -133,12 +133,12 @@ namespace PixelFactory.Items
             Count += count;
             return true;
         }
-        public bool AddEntities(int count = 1)
+        public bool AddEntities(float count = 1)
         {
             return AddEntities(Entity, count);
         }
 
-        public bool CanRemove(InventoryEntity entity, int count = 1)
+        public bool CanRemove(InventoryEntity entity, float count = 1)
         {
             if (IsEmpty)
             {
@@ -152,7 +152,7 @@ namespace PixelFactory.Items
             {
                 return false;
             }
-            int finalCount = Count - count;
+            float finalCount = Count - count;
             if (finalCount < 0)
             {
                 return false;
@@ -168,7 +168,7 @@ namespace PixelFactory.Items
         {
             return RemoveEntity(Entity);
         }
-        public bool RemoveEntites(int count = 1)
+        public bool RemoveEntites(float count = 1)
         {
             return RemoveEntities(Entity, count);
         }
@@ -187,7 +187,7 @@ namespace PixelFactory.Items
             Filtered = false;
             FilterEntity = null;
         }
-        public bool RemoveEntities(InventoryEntity entity, int count = 1)
+        public bool RemoveEntities(InventoryEntity entity, float count = 1)
         {
             if (!CanRemove(entity, count))
             {
@@ -197,7 +197,7 @@ namespace PixelFactory.Items
             Reset();
             return true;
         }
-        public bool HasEntities(InventoryEntity entity, int count)
+        public bool HasEntities(InventoryEntity entity, float count)
         {
             if(!HasSameEntity(entity))
             {

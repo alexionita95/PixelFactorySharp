@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Inventory
 {
     public class Inventory : Entity
     {
@@ -55,7 +55,7 @@ namespace PixelFactory.Items
         {
             AddEntities(entity);
         }
-        public void AddEntities(InventoryEntity entity, int count = 1)
+        public void AddEntities(InventoryEntity entity, float count = 1)
         {
             if (IsFull)
             {
@@ -65,7 +65,7 @@ namespace PixelFactory.Items
             {
                 return;
             }
-            int neededQuantity = count;
+            float neededQuantity = count;
             foreach (InventorySlot slot in Slots)
             {
                 if (slot.IsFull)
@@ -73,7 +73,7 @@ namespace PixelFactory.Items
                     continue;
                 }
 
-                int addCount = entity.MaximumQuantity;
+                float addCount = entity.MaximumQuantity;
                 if (!slot.IsEmpty)
                 {
                     addCount = slot.AvailableSpace;
@@ -111,7 +111,7 @@ namespace PixelFactory.Items
                         InventorySlot slot = Slots[j];
                         if (slot.HasSameEntity(currentSlot))
                         {
-                            int neededCount = currentSlot.Capacity - currentSlot.Count;
+                            float neededCount = currentSlot.Capacity - currentSlot.Count;
                             if (neededCount > 0)
                             {
                                 if (slot.Count >= neededCount)
@@ -136,16 +136,16 @@ namespace PixelFactory.Items
             Slots = Slots.OrderByDescending(slot => slot.Entity?.Id)
                     .ThenByDescending(slot => slot.Count).ToList();
         }
-        public void RemoveEntities(InventoryEntity entity, int count = 1)
+        public void RemoveEntities(InventoryEntity entity, float count = 1)
         {
             if(!HasEntities(entity, count))
             { 
                 return;
             }
-            int neededCount = count;
+            float neededCount = count;
             foreach (InventorySlot slot in Slots)
             {
-                int currentCount = neededCount;
+                float currentCount = neededCount;
                 if(currentCount > slot.Count)
                 {
                     currentCount = slot.Count;
@@ -167,9 +167,9 @@ namespace PixelFactory.Items
         {
             RemoveEntities(entity);
         }
-        public bool HasEntities(InventoryEntity entity, int quantity)
+        public bool HasEntities(InventoryEntity entity, float quantity)
         {
-            int inventoryQuantity = 0;
+            float inventoryQuantity = 0;
             foreach (InventorySlot slot in Slots)
             {
                 if (slot.HasSameEntity(entity))
@@ -198,9 +198,9 @@ namespace PixelFactory.Items
             }
             return result >= count;
         }
-        public bool CanAccept(InventoryEntity entity, int quantity = 1)
+        public bool CanAccept(InventoryEntity entity, float quantity = 1)
         {
-            int acceptQuantity = 0;
+            float acceptQuantity = 0;
             foreach (InventorySlot slot in Slots)
             {
                 if (slot.HasSameEntity(entity))

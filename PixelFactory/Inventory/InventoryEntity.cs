@@ -6,11 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelFactory.Items
+namespace PixelFactory.Inventory
 {
+    public enum InventoryEntityType
+    {
+        Solid, Fluid
+    }
     public class InventoryEntity : DrawableEntity
     {
+
         public string Name { get; set; }
+        public InventoryEntityType Type { get; set; } = InventoryEntityType.Solid;
         public int MaximumQuantity { get; set; } = 10;
         public InventoryEntity() : base(Vector2.One)
         {
@@ -19,6 +25,7 @@ namespace PixelFactory.Items
         {
             Name = item.Name;
             MaximumQuantity = item.MaximumQuantity;
+            Type = item.Type;
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

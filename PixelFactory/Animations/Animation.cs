@@ -10,19 +10,19 @@ namespace PixelFactory.Animations
 {
     public class Animation
     {
-        public Texture2D Texture { get; set; }
+        public Graphics.Texture Texture { get; set; }
         public Vector2 FrameSize { get; set; }
         public int CurrentFrameIndex {  get; private set; } = 0;
         public double Duration { get; private set; }
         public Rectangle CurrentFrame { get => CalculateCurrentFrame(); }
         private int FrameCount = 0;
         private int RowCount = 0;
-        public int CurrentRow { get; set; }
+        public int CurrentRow { get => Texture.CurrentRow; set => Texture.CurrentRow = value; }
         private double progress;
         private bool playing = true;
         public bool Loop { get; private set; }
 
-        public Animation(Texture2D texture, Vector2 frameSize, double duration, bool loop = false) 
+        public Animation(Graphics.Texture texture, Vector2 frameSize, double duration, bool loop = false) 
         {
             Texture = texture;
             FrameSize = frameSize;
@@ -37,7 +37,7 @@ namespace PixelFactory.Animations
         }
         private Rectangle CalculateCurrentFrame()
         {
-            return new Rectangle(new Vector2(FrameSize.X * CurrentFrameIndex, FrameSize.Y * CurrentRow).ToPoint(), FrameSize.ToPoint());
+            return Texture.SourceRenctangle;
         }
         public void Update(GameTime gameTime)
         {
@@ -66,6 +66,7 @@ namespace PixelFactory.Animations
             if(frameIndex != CurrentFrameIndex)
             {
                 CurrentFrameIndex = frameIndex;
+                Texture.CurrentColumn = CurrentFrameIndex;
             }
 
         }

@@ -68,6 +68,18 @@
 /processorParam:TextureFormat=Color
 /build:debugItem.png
 
+#begin debugPipes.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:debugPipes.png
+
 #begin debugUIBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor

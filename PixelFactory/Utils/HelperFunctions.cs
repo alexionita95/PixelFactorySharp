@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using static PixelFactory.Entities.DrawableEntity;
 
 namespace PixelFactory.Utils
 {
@@ -23,6 +24,31 @@ namespace PixelFactory.Utils
         {
             if (value == min || value == max) return true;
             return false;
+        }
+        public static bool IsPerpendicular(EntityRotation source, EntityRotation target)
+        {
+            switch (source)
+            {
+                case EntityRotation.None:
+                case EntityRotation.Rot180:
+                    if (target == EntityRotation.Rot90 || target == EntityRotation.Rot270)
+                    {
+                        return true;
+                    }
+                    break;
+                case EntityRotation.Rot90:
+                case EntityRotation.Rot270:
+                    if (target == EntityRotation.None || target == EntityRotation.Rot180)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+        public static bool IsInBounds(Vector2 position, Rectangle bounds)
+        {
+            return position.X >= bounds.Left && position.X < bounds.Right && position.Y >= bounds.Top && position.Y < bounds.Bottom;
         }
         public static Vector2 GetMidPoint(Vector2 start, Vector2 end, Vector2 size, Vector2 scale)
         {

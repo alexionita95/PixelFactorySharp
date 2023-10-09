@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PixelFactory.Entities;
-using PixelFactory.Items;
+using PixelFactory.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace PixelFactory.Buildings
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Vector2 pixelSize = Map.MapToScreen(rotatedSize.X, rotatedSize.Y);
+            Vector2 pixelSize = Map.MapToScreen(RotatedSize.X, RotatedSize.Y);
 
             Vector2 newPos = Map.MapToScreen(Position.X, Position.Y);
             float difference;
