@@ -98,5 +98,12 @@ namespace PixelFactory
             }
             base.Update(gameTime);
         }
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            data.AddRange(Inventory.GetData());
+            data.AddRange(Crafter.GetData());
+            return data;
+        }
     }
 }

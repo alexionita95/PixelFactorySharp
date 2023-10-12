@@ -2,13 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using PixelFactory.Entities;
 using PixelFactory.Inventory;
+using System.Collections.Generic;
 
 namespace PixelFactory.Logistics
 {
     public class LogisticsEntity : DrawableEntity
     {
         public InventoryEntity Entity { get; set; } = null;
-        public double Progress { get; set; } = 0;
+        public float Progress { get; set; } = 0;
         public bool Ready { get => Progress.Equals(1); }
         public Direction SourceDirection { get; set; }
         public uint SourcePosition { get; set; }
@@ -20,7 +21,7 @@ namespace PixelFactory.Logistics
         {
             if (ReachedDestination)
                 return;
-            Progress += step;
+            Progress += (float)step;
             if (Progress > 1)
             {
                 Progress = 1;
@@ -45,6 +46,18 @@ namespace PixelFactory.Logistics
             Texture = Entity.Texture;
             drawPosititon = LogisticPosition;
             base.Draw(gameTime, spriteBatch);
+        }
+
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serialization.Serializer.WriteString(Entity.Id, data);
+            Serialization.Serializer.WriteInt((int)SourceDirection, data);
+            Serialization.Serializer.WriteInt((int)SourcePosition, data);
+            Serialization.Serializer.WriteInt((int)DestinationDirection, data);
+            Serialization.Serializer.WriteInt((int)DestinationPosition, data);
+            Serialization.Serializer.WriteFloat(Progress, data);
+            return data;
         }
     }
 }

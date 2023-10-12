@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using PixelFactory.Entities;
 using PixelFactory.Inventory;
 using PixelFactory.Logistics.Items;
+using PixelFactory.Serialization;
 using PixelFactory.Utils;
 using System;
 using System.Collections.Generic;
@@ -367,6 +368,14 @@ namespace PixelFactory.Logistics.Fluids
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             base.Draw(gameTime, spriteBatch);
+        }
+
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serializer.WriteString(CurrentEntity.Id, data);
+            Serializer.WriteFloat(currentCount, data);
+            return data;
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using PixelFactory.Entities;
 using PixelFactory.Inventory;
+using PixelFactory.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,6 +103,26 @@ namespace PixelFactory.Crafting
                 }
             }
             base.Update(gameTime);
+        }
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serializer.WriteInt(ActiveJobs.Count, data);
+            for (int i = 0; i < ActiveJobs.Count; ++i)
+            {
+                data.AddRange(ActiveJobs.ElementAt(i).GetData());
+            }
+            Serializer.WriteInt(PendingJobs.Count, data);
+            for (int i = 0; i < PendingJobs.Count; ++i)
+            {
+                data.AddRange(PendingJobs.ElementAt(i).GetData());
+            }
+            Serializer.WriteInt(Outputs.Count, data);
+            for (int i = 0; i < Outputs.Count; ++i)
+            {
+                data.AddRange(Outputs.ElementAt(i).GetData());
+            }
+                return data;
         }
     }
 }

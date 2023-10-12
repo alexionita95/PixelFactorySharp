@@ -1,4 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using PixelFactory.Serialization;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PixelFactory.Entities
 {
@@ -23,6 +26,24 @@ namespace PixelFactory.Entities
         public virtual void Update(GameTime gameTime)
         {
 
+        }
+        public virtual List<byte> GetData()
+        {
+            List<byte> data = new List<byte>();
+            Serialization.Serializer.WriteString(Id, data);
+            return data;
+        }
+        public virtual List<byte> Serialize() 
+        {
+            List<byte> result = new List<byte>();
+            string name = this.GetType().FullName;
+            Serialization.Serializer.WriteString(name, result);
+            result.AddRange(this.GetData());
+            return result;
+        }
+        public virtual void Deserialize(List<byte> data, ContentManager contentManager) 
+        {
+            Id = Serializer.ReadString(data);
         }
     }
 }

@@ -235,5 +235,14 @@ namespace PixelFactory.Inventory
             base.Update(gameTime);
         }
 
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serialization.Serializer.WriteBool(IsEmpty, data);
+            Serialization.Serializer.WriteString(Entity.Id, data);
+            Serialization.Serializer.WriteFloat(Count, data);
+            return data;
+        }
+
     }
 }

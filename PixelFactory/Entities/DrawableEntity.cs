@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PixelFactory.Animations;
+using PixelFactory.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace PixelFactory.Entities
 {
-
-
-
     public class DrawableEntity : Entity
     {
         public enum DrawLayer
@@ -24,7 +22,7 @@ namespace PixelFactory.Entities
             None, Rot90, Rot180, Rot270
         }
         public SpriteEffects Effects { get; set; } = SpriteEffects.None;
-        public PixelFactory.Graphics.Texture Texture { get; set; }
+        public Graphics.Texture Texture { get; set; }
         public Animation Animation { get; set; } = null;
         public Vector2 Position { get => position; set { position = value; drawPosititon = Map.MapToScreen(value.X, value.Y); } }
         public EntityRotation Rotation { get => rotation; set { rotation = value; Rotate(); } }
@@ -38,6 +36,11 @@ namespace PixelFactory.Entities
         private Vector2 position;
         private EntityRotation rotation;
 
+        public DrawableEntity()
+        {
+            Size = Vector2.One;
+            RotatedSize = Vector2.One;
+        }
 
         public DrawableEntity(Vector2 size)
         {
@@ -128,6 +131,24 @@ namespace PixelFactory.Entities
             float scaleWidth = textureSize.X * Scale.X * Zoom;
             float scaleHeight = textureSize.Y * Scale.Y * Zoom;
             spriteBatch.Draw(Texture.Texture2D, new Rectangle((int)((drawPosititon.X * Zoom + (int)scaleWidth / 2)), (int)((drawPosititon.Y * Zoom + (int)scaleHeight / 2)), (int)scaleWidth, (int)scaleHeight), sourceRectangle, Color.White, rotation, new Vector2(textureSize.X / 2, textureSize.Y / 2), Effects, layer);
+        }
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serialization.Serializer.WriteFloat(Position.X, data);
+            Serialization.Serializer.WriteFloat(Position.Y, data);
+            Serialization.Serializer.WriteInt((int)Rotation, data);
+
+            return data;
+        }
+        public override void Deserialize(List<byte> data, ContentManager contentManager)
+        {
+            base.Deserialize(data, contentManager);
+            float x = Serializer.ReadFloat(data);
+            float y = Serializer.ReadFloat(data);
+            int rotation = Serializer.ReadInt(data);
+            Position = new Vector2(x, y);
+            Rotation = (EntityRotation)(rotation);
         }
     }
 }

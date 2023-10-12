@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-
+using PixelFactory.Entities;
 
 namespace PixelFactory.Graphics
 {
-    public class Texture
+    public class Texture : Entity
     {
         public Texture2D Texture2D { get; private set; }
         public Vector2 TileSize { get;private set; }

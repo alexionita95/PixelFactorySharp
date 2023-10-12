@@ -7,9 +7,7 @@ namespace PixelFactory.Logistics.Items
 {
     public class Belt : ItemLogisticsComponent
     {
-        public int ItemLimit { get; set; } = 10;
         public bool corner = false;
-
         public Belt()
         {
             AddInput(Direction.N, 0);

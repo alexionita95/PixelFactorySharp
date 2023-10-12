@@ -214,6 +214,18 @@ namespace PixelFactory.Logistics.Items
             base.Draw(gameTime, spriteBatch);
         }
 
+        public override List<byte> GetData()
+        {
+            List<byte> data = base.GetData();
+            Serialization.Serializer.WriteInt(CurrentOutputIndex,data);
+            Serialization.Serializer.WriteInt(Items.Count,data);
+            for (int i = 0; i <Items.Count;++i)
+            {
+                data.AddRange(Items[i].GetData());
+            }
+            return data;
+        }
+
 
     }
 }
